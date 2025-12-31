@@ -1,0 +1,2708 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FRC 5066 Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #14173E;
+      color: #FFFFFF;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Arial', sans-serif;
+    }
+
+    /* Attendance Panel */
+    .attendance-panel {
+      position: absolute;
+      top: 2vh;
+      left: 5vw;
+      width: 22vw;
+      min-width: 200px;
+      height: 45vh;
+      background: rgba(20, 23, 62, 0.9);
+      border-radius: 1vw;
+      padding: 1.5vw;
+      box-shadow: 0 0 1.5vw rgba(255, 180, 0, 0.4);
+      border: 0.15vw solid rgba(255, 180, 0, 0.6);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+      box-sizing: border-box;
+    }
+
+    .title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.2em, 2vw, 2.5em);
+      font-weight: 900;
+      letter-spacing: 0.3vw;
+      text-shadow: 0 0 1vw #FFB400;
+      color: #FFFFFF;
+      text-align: center;
+      margin: 0 0 1vh 0;
+    }
+
+    .names-container {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .names-wrapper {
+      display: flex;
+      gap: 1.5vw;
+      will-change: transform;
+    }
+
+    .names-wrapper.scrolling {
+      animation: scroll linear infinite;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .names-column {
+      flex: 0 0 auto;
+      list-style: none;
+      padding: 0 1vw;
+      margin: 0;
+      font-size: clamp(0.9em, 1.2vw, 1.6em);
+      color: #FFFFFF;
+    }
+
+    .names-column li {
+      height: 6vh;
+      line-height: 6vh;
+      padding: 0;
+      margin: 0;
+    }
+
+    .hornet-count {
+      text-align: center;
+      font-size: clamp(1em, 1.8vw, 2.2em);
+      font-weight: bold;
+      color: #FFFFFF;
+      text-shadow: 0 0 0.8vw #FFB400;
+      margin-top: 1vh;
+    }
+
+    @keyframes scroll {
+      0% {
+        transform: translateY(0);
+      }
+
+      100% {
+        transform: translateY(var(--scroll-distance));
+      }
+    }
+
+    /* Right Section Container */
+    .right-section {
+      position: absolute;
+      top: 2vh;
+      left: 28vw;
+      right: 2vw;
+      bottom: 2vh;
+      display: flex;
+      flex-direction: column;
+      gap: 1vh;
+    }
+
+    /* Tasks Table */
+    .tasks-table {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1vh;
+      position: relative;
+    }
+
+    .team-row {
+      flex: 1;
+      display: flex;
+      gap: 0.5vw;
+      background: rgba(20, 23, 62, 0.8);
+      border-radius: 0.8vw;
+      border: 0.15vw solid rgba(255, 180, 0, 0.4);
+      box-shadow: 0 0 1vw rgba(255, 180, 0, 0.2);
+      backdrop-filter: blur(8px);
+      overflow: hidden;
+    }
+
+    .team-label {
+      width: 3vw;
+      min-width: 30px;
+      background: rgba(255, 180, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 0.15vw solid rgba(255, 180, 0, 0.3);
+    }
+
+    .team-label span {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.7em, 1.1vw, 1.3em);
+      font-weight: 700;
+      color: #FFFFFF;
+      text-shadow: 0 0 0.6vw #FFB400;
+      letter-spacing: 0.1vw;
+    }
+
+    .task-columns {
+      flex: 1;
+      display: flex;
+      gap: 0.5vw;
+      padding: 0.5vw;
+    }
+
+    .task-column {
+      flex: 1;
+      border-radius: 0.5vw;
+      padding: 1vh 0.5vw;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5vh;
+      overflow-y: auto;
+    }
+
+    .task-column.red-col {
+      background: rgba(255, 0, 0, 0.15);
+      border: 0.1vw solid rgba(255, 0, 0, 0.4);
+    }
+
+    .task-column.yellow-col {
+      background: rgba(255, 255, 0, 0.1);
+      border: 0.1vw solid rgba(255, 255, 0, 0.4);
+    }
+
+    .task-column.green-col {
+      background: rgba(0, 255, 0, 0.1);
+      border: 0.1vw solid rgba(0, 255, 0, 0.4);
+    }
+
+    .task-item {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 0.4vw;
+      padding: 0.5vh 0.5vw;
+      font-size: clamp(0.6em, 0.9vw, 1em);
+      text-align: center;
+      color: #FFFFFF;
+    }
+
+    /* Hexagon Overlay */
+    .hex-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+      overflow: hidden;
+    }
+
+    .hexagon {
+      position: absolute;
+      background: #FFB400;
+      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+      opacity: 0;
+      transform: scale(0) translateZ(0);
+      will-change: transform, opacity;
+    }
+
+    .hexagon.animate-in {
+      animation: hexIn 0.6s ease forwards;
+    }
+
+    .hexagon.animate-out {
+      animation: hexOut 0.6s ease forwards;
+    }
+
+    @keyframes hexIn {
+      0% {
+        opacity: 0;
+        transform: scale(0) rotate(0deg);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.2) rotate(30deg);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+    }
+
+    @keyframes hexOut {
+      0% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.2) rotate(-30deg);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(0) rotate(-60deg);
+      }
+    }
+
+    /* Info Panel - Bottom Left */
+    .info-panel {
+      position: absolute;
+      top: 49vh;
+      left: 5vw;
+      /* Changed from 1vw */
+      width: 22vw;
+      min-width: 200px;
+      height: 47vh;
+      background: rgba(20, 23, 62, 0.9);
+      border-radius: 1vw;
+      padding: 1.5vw;
+      box-shadow: 0 0 1.5vw rgba(255, 180, 0, 0.4);
+      border: 0.15vw solid rgba(255, 180, 0, 0.6);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+      box-sizing: border-box;
+    }
+
+    .current-time {
+      text-align: center;
+      margin-bottom: 2vh;
+    }
+
+    .current-time .date {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1em, 1.5vw, 1.8em);
+      color: #FFFFFF;
+      text-shadow: 0 0 0.5vw #FFB400;
+    }
+
+    .current-time .time {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.5em, 2.5vw, 3em);
+      font-weight: 900;
+      color: #FFB400;
+      text-shadow: 0 0 1vw #FFB400;
+    }
+
+    .event-countdown {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-top: 0.1vw solid rgba(255, 180, 0, 0.3);
+      padding-top: 2vh;
+    }
+
+    .event-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.8em, 1.2vw, 1.4em);
+      font-weight: 700;
+      color: #FFB400;
+      text-align: center;
+      margin-bottom: 1vh;
+      text-shadow: 0 0 0.5vw #FFB400;
+    }
+
+    .countdown-label {
+      font-size: clamp(0.7em, 1vw, 1.2em);
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 1vh;
+    }
+
+    .countdown-timer {
+      display: flex;
+      gap: 0.8vw;
+      justify-content: center;
+      flex-wrap: nowrap;
+    }
+
+    .countdown-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    .countdown-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.2em, 2vw, 2.5em);
+      font-weight: 900;
+      color: #FFFFFF;
+      text-shadow: 0 0 0.8vw #FFB400;
+      background: rgba(255, 180, 0, 0.1);
+      border-radius: 0.5vw;
+      padding: 0.3vh 0.5vw;
+      min-width: 2vw;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .countdown-label-unit {
+      font-size: clamp(0.6em, 0.8vw, 1em);
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 0.5vh;
+      text-transform: uppercase;
+    }
+
+    /* Add this new style for the vertical title */
+    .vertical-title {
+      position: absolute;
+      top: 2vh;
+      left: 0.5vw;
+      width: 3vw;
+      height: 96vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .vertical-title span {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.2em, 2vw, 2.5em);
+      font-weight: 900;
+      letter-spacing: 0.5vw;
+      color: #FFB400;
+      text-shadow: 0 0 1.5vw #FFB400, 0 0 3vw rgba(255, 180, 0, 0.5);
+    }
+
+    /* Info Panel Slides */
+    .info-content-wrapper {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .info-slide.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .slide-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1em, 1.5vw, 1.8em);
+      font-weight: 700;
+      color: #FFB400;
+      text-align: center;
+      margin-bottom: 2vh;
+      text-shadow: 0 0 0.8vw #FFB400;
+    }
+
+    /* Singularity Collapse Transition */
+    .info-slide.singularity-out {
+      animation: singularityOut 0.6s ease-in forwards;
+    }
+
+    .info-slide.singularity-in {
+      animation: singularityIn 0.6s ease-out forwards;
+    }
+
+    @keyframes singularityOut {
+      0% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+        filter: blur(0);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(0.5) rotate(5deg);
+        filter: blur(2px);
+      }
+
+      80% {
+        opacity: 0.8;
+        transform: scale(0.1) rotate(15deg);
+        filter: blur(4px) brightness(2);
+      }
+
+      100% {
+        opacity: 0;
+        visibility: hidden;
+        transform: scale(0) rotate(30deg);
+        filter: blur(8px) brightness(3);
+      }
+    }
+
+    @keyframes singularityIn {
+      0% {
+        opacity: 0;
+        transform: scale(0) rotate(-30deg);
+        filter: blur(8px) brightness(3);
+      }
+
+      20% {
+        opacity: 0.8;
+        transform: scale(0.1) rotate(-15deg);
+        filter: blur(4px) brightness(2);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(0.5) rotate(-5deg);
+        filter: blur(2px);
+      }
+
+      100% {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1) rotate(0deg);
+        filter: blur(0);
+      }
+    }
+
+    /* Singularity flash effect */
+    .singularity-flash {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: radial-gradient(circle, #FFB400 0%, transparent 70%);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    .singularity-flash.active {
+      animation: flashPulse 0.4s ease-out forwards;
+    }
+
+    @keyframes flashPulse {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+      }
+
+      50% {
+        width: 150%;
+        height: 150%;
+        opacity: 0.8;
+      }
+
+      100% {
+        width: 200%;
+        height: 200%;
+        opacity: 0;
+      }
+    }
+
+    /* Commits Styles */
+    .commits-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1vh;
+      overflow: hidden;
+    }
+
+    .commit-item {
+      background: rgba(255, 180, 0, 0.1);
+      border-radius: 0.5vw;
+      padding: 1vh 1vw;
+      border-left: 0.3vw solid #FFB400;
+    }
+
+    .commit-message {
+      font-size: clamp(0.7em, 1vw, 1.1em);
+      color: #FFFFFF;
+      margin-bottom: 0.5vh;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .commit-meta {
+      font-size: clamp(0.6em, 0.8vw, 0.9em);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .commit-author {
+      color: #FFB400;
+    }
+
+    .commit-sha {
+      font-family: 'Courier New', monospace;
+      color: rgba(255, 180, 0, 0.7);
+      font-size: 0.9em;
+    }
+
+    /* Build Progress Styles */
+    .build-progress-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      padding: 1vh 0;
+    }
+
+    .progress-stat {
+      text-align: center;
+      margin-bottom: 1.5vh;
+    }
+
+    .progress-stat-label {
+      font-size: clamp(0.7em, 1vw, 1.1em);
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 0.5vh;
+    }
+
+    .progress-stat-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.5em, 2.5vw, 3em);
+      font-weight: 900;
+      color: #FFB400;
+      text-shadow: 0 0 1vw #FFB400;
+    }
+
+    .progress-bar-container {
+      margin: 2vh 0;
+    }
+
+    .progress-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: clamp(0.6em, 0.9vw, 1em);
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 0.5vh;
+    }
+
+    .progress-bar-track {
+      height: 2vh;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1vh;
+      overflow: hidden;
+      border: 0.1vw solid rgba(255, 180, 0, 0.3);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FFB400, #FF8C00);
+      border-radius: 1vh;
+      transition: width 1s ease;
+      box-shadow: 0 0 1vw #FFB400;
+    }
+
+    .current-milestone {
+      margin-top: 2vh;
+      text-align: center;
+      padding: 1vh;
+      background: rgba(255, 180, 0, 0.1);
+      border-radius: 0.5vw;
+      border-left: 0.3vw solid #FFB400;
+    }
+
+    .milestone-label {
+      font-size: clamp(0.6em, 0.8vw, 0.9em);
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 0.3vh;
+    }
+
+    .milestone-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.8em, 1.2vw, 1.4em);
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+
+    /* Swarm Attack Transition */
+    .swarm-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 60;
+      overflow: hidden;
+    }
+
+    .hornet {
+      position: absolute;
+      width: 10vw;
+      height: 10vw;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .hornet img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 0.4vw #FFB400);
+      -webkit-filter: drop-shadow(0 0 0.4vw #FFB400);
+      display: block;
+      pointer-events: none;
+    }
+
+    .hornet.swarm-in {
+      animation: hornetSwarmIn 0.8s ease-out forwards;
+    }
+
+    .hornet.swarm-out {
+      animation: hornetSwarmOut 0.6s ease-in forwards;
+    }
+
+    @keyframes hornetSwarmIn {
+      0% {
+        opacity: 0;
+        transform: translate(var(--start-x), var(--start-y)) rotate(var(--rotation)) scale(0.5);
+      }
+
+      30% {
+        opacity: 1;
+        transform: translate(calc(var(--start-x) * 0.5), calc(var(--start-y) * 0.5)) rotate(calc(var(--rotation) + 180deg)) scale(1);
+      }
+
+      60% {
+        opacity: 1;
+        transform: translate(calc(var(--end-x) * 0.3), calc(var(--end-y) * 0.3)) rotate(calc(var(--rotation) + 360deg)) scale(1.2);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translate(var(--end-x), var(--end-y)) rotate(calc(var(--rotation) + 540deg)) scale(1);
+      }
+    }
+
+    @keyframes hornetSwarmOut {
+      0% {
+        opacity: 1;
+        transform: translate(var(--end-x), var(--end-y)) rotate(0deg) scale(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: translate(calc(var(--end-x) * 1.5), calc(var(--end-y) * 1.5)) rotate(180deg) scale(1.2);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(var(--exit-x), var(--exit-y)) rotate(360deg) scale(0.3);
+      }
+    }
+
+    .info-slide.swarm-fade-out {
+      animation: swarmFadeOut 0.3s ease-in forwards;
+    }
+
+    .info-slide.swarm-fade-in {
+      animation: swarmFadeIn 0.3s ease-out forwards;
+    }
+
+    @keyframes swarmFadeOut {
+      0% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    @keyframes swarmFadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    /* Stripe Sweep Transition */
+    .stripe-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 70;
+      overflow: hidden;
+    }
+
+    .stripe {
+      position: absolute;
+      left: -150%;
+      /* ensure stripe starts well left so rotation covers panel */
+      width: 300%;
+      height: 14%;
+      /* slightly taller so gaps don't appear after rotation */
+      transform-origin: center;
+      transform: rotate(-45deg) translateX(-150%);
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .stripe:nth-child(odd) {
+      background: #000000;
+    }
+
+    .stripe:nth-child(even) {
+      background: #FFB400;
+    }
+
+    .stripe.sweep-in {
+      animation: stripeSweepIn 0.6s ease-out forwards;
+    }
+
+    .stripe.sweep-out {
+      animation: stripeSweepOut 0.5s ease-in forwards;
+    }
+
+    @keyframes stripeSweepIn {
+      0% {
+        opacity: 1;
+        transform: rotate(-45deg) translateX(-150%);
+      }
+
+      100% {
+        opacity: 1;
+        transform: rotate(-45deg) translateX(0%);
+      }
+    }
+
+    @keyframes stripeSweepOut {
+      0% {
+        opacity: 1;
+        transform: rotate(-45deg) translateX(0%);
+      }
+
+      100% {
+        opacity: 1;
+        transform: rotate(-45deg) translateX(150%);
+      }
+    }
+
+    .info-slide.stripe-fade-out {
+      animation: stripeFadeOut 0.2s ease-in forwards;
+    }
+
+    .info-slide.stripe-fade-in {
+      animation: stripeFadeIn 0.2s ease-out forwards;
+    }
+
+    @keyframes stripeFadeOut {
+      0% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    @keyframes stripeFadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    /* Weather Styles */
+    .weather-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2vh;
+    }
+
+    .weather-location {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.8em, 1.2vw, 1.4em);
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .weather-main {
+      display: flex;
+      align-items: center;
+      gap: 1.5vw;
+    }
+
+    .weather-icon {
+      font-size: clamp(3em, 5vw, 6em);
+    }
+
+    .weather-temp {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.5em, 4vw, 5em);
+      font-weight: 900;
+      color: #FFB400;
+      text-shadow: 0 0 1vw #FFB400;
+    }
+
+    .weather-desc {
+      font-size: clamp(0.9em, 1.3vw, 1.5em);
+      color: #FFFFFF;
+      text-transform: capitalize;
+    }
+
+    .weather-details {
+      display: flex;
+      gap: 2vw;
+      margin-top: 1vh;
+    }
+
+    .weather-detail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3vh;
+    }
+
+    .weather-detail-label {
+      font-size: clamp(0.6em, 0.8vw, 0.9em);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .weather-detail-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1em, 1.4vw, 1.6em);
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+
+    /* Buzz Static Transition */
+    .static-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 75;
+      overflow: hidden;
+      opacity: 0;
+    }
+
+    .static-overlay.active {
+      opacity: 1;
+    }
+
+    .static-line {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #FFB400;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .static-line.buzzing {
+      animation: buzzLine var(--buzz-duration, 0.1s) linear infinite;
+    }
+
+    @keyframes buzzLine {
+      0% {
+        transform: translateX(-5%) scaleX(1.1);
+        opacity: var(--line-opacity, 0.8);
+      }
+
+      25% {
+        transform: translateX(3%) scaleX(0.95);
+        opacity: calc(var(--line-opacity, 0.8) * 0.7);
+      }
+
+      50% {
+        transform: translateX(-2%) scaleX(1.05);
+        opacity: var(--line-opacity, 0.8);
+      }
+
+      75% {
+        transform: translateX(4%) scaleX(0.9);
+        opacity: calc(var(--line-opacity, 0.8) * 0.8);
+      }
+
+      100% {
+        transform: translateX(-5%) scaleX(1.1);
+        opacity: var(--line-opacity, 0.8);
+      }
+    }
+
+    .static-overlay.intensify .static-line {
+      animation-duration: 0.05s !important;
+    }
+
+    .static-overlay.peak .static-line {
+      animation-duration: 0.03s !important;
+      box-shadow: 0 0 8px #FFB400, 0 0 15px #FFB400;
+    }
+
+    .info-slide.static-fade-out {
+      animation: staticFadeOut 0.15s ease-in forwards;
+    }
+
+    .info-slide.static-fade-in {
+      animation: staticFadeIn 0.15s ease-out forwards;
+    }
+
+    @keyframes staticFadeOut {
+      0% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    @keyframes staticFadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    /* Days Since Last Accident Styles */
+    .accident-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8vh;
+    }
+
+    .accident-icon {
+      font-size: clamp(2em, 3.5vw, 4em);
+      animation: wobble 2s ease-in-out infinite;
+    }
+
+    @keyframes wobble {
+
+      0%,
+      100% {
+        transform: rotate(-5deg);
+      }
+
+      50% {
+        transform: rotate(5deg);
+      }
+    }
+
+    .accident-days {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(3em, 5vw, 6em);
+      font-weight: 900;
+      color: #FFB400;
+      text-shadow: 0 0 2vw #FFB400, 0 0 4vw rgba(255, 180, 0, 0.5);
+      line-height: 1;
+    }
+
+    .accident-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.6em, 1vw, 1.2em);
+      font-weight: 700;
+      color: #FFFFFF;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.15vw;
+    }
+
+    .accident-subtitle {
+      font-size: clamp(0.5em, 0.8vw, 0.9em);
+      color: rgba(255, 255, 255, 0.6);
+      text-align: center;
+      font-style: italic;
+    }
+
+    .accident-record {
+      margin-top: 1vh;
+      padding: 0.8vh 1.2vw;
+      background: rgba(255, 180, 0, 0.1);
+      border-radius: 0.5vw;
+      border: 0.1vw solid rgba(255, 180, 0, 0.3);
+      text-align: center;
+    }
+
+    .accident-record-label {
+      font-size: clamp(0.5em, 0.7vw, 0.8em);
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 0.2vh;
+    }
+
+    .accident-record-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(0.8em, 1.2vw, 1.4em);
+      font-weight: 700;
+      color: #FFB400;
+    }
+
+    /* Hack Transition */
+    .hack-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 80;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .hack-overlay.active {
+      background: rgba(0, 0, 0, 0.95);
+    }
+
+    .matrix-rain {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .matrix-column {
+      position: absolute;
+      top: -100%;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(0.6em, 1vw, 1.2em);
+      color: #00FF00;
+      text-shadow: 0 0 8px #00FF00, 0 0 15px #00FF00;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      white-space: nowrap;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .matrix-column.fall {
+      animation: matrixFall var(--fall-duration, 1.5s) linear forwards;
+    }
+
+    @keyframes matrixFall {
+      0% {
+        opacity: 0.8;
+        transform: translateY(0);
+      }
+
+      80% {
+        opacity: 0.8;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(250%);
+      }
+    }
+
+    .hack-terminal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Courier New', monospace;
+      font-size: clamp(0.7em, 1.1vw, 1.3em);
+      color: #00FF00;
+      text-shadow: 0 0 10px #00FF00;
+      text-align: left;
+      opacity: 0;
+      white-space: pre;
+      line-height: 1.4;
+    }
+
+    .hack-terminal.active {
+      animation: terminalFlicker 0.1s ease-in-out infinite alternate;
+    }
+
+    @keyframes terminalFlicker {
+      0% {
+        opacity: 0.9;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .hack-terminal .cursor {
+      display: inline-block;
+      width: 0.6em;
+      height: 1.1em;
+      background: #00FF00;
+      animation: cursorBlink 0.5s step-end infinite;
+      vertical-align: middle;
+      margin-left: 2px;
+    }
+
+    @keyframes cursorBlink {
+
+      0%,
+      50% {
+        opacity: 1;
+      }
+
+      51%,
+      100% {
+        opacity: 0;
+      }
+    }
+
+    .glitch-line {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #00FF00;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    .glitch-line.active {
+      animation: glitchScan 0.15s linear forwards;
+    }
+
+    @keyframes glitchScan {
+      0% {
+        opacity: 1;
+        transform: translateX(-100%);
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+    }
+
+    .hack-scanlines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 255, 0, 0.03) 2px,
+          rgba(0, 255, 0, 0.03) 4px);
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .hack-scanlines.active {
+      opacity: 1;
+    }
+
+    .info-slide.hack-fade-out {
+      animation: hackFadeOut 0.3s ease-in forwards;
+    }
+
+    .info-slide.hack-fade-in {
+      animation: hackFadeIn 0.4s ease-out forwards;
+    }
+
+    @keyframes hackFadeOut {
+      0% {
+        opacity: 1;
+        filter: none;
+      }
+
+      50% {
+        opacity: 0.5;
+        filter: hue-rotate(90deg) brightness(1.5);
+      }
+
+      100% {
+        opacity: 0;
+        visibility: hidden;
+        filter: hue-rotate(180deg) brightness(2);
+      }
+    }
+
+    @keyframes hackFadeIn {
+      0% {
+        opacity: 0;
+        filter: hue-rotate(180deg) brightness(2);
+      }
+
+      50% {
+        opacity: 0.5;
+        filter: hue-rotate(90deg) brightness(1.5);
+      }
+
+      100% {
+        opacity: 1;
+        visibility: visible;
+        filter: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Vertical Team Title -->
+  <div class="vertical-title">
+    <span>SALINE SINGULARITY</span>
+  </div>
+
+  <!-- Attendance Panel -->
+  <div class="attendance-panel">
+    <h1 class="title">ATTENDANCE</h1>
+
+    <div class="names-container">
+      <div class="names-wrapper" id="names-wrapper">
+        <ul class="names-column" id="left-column"></ul>
+        <ul class="names-column" id="right-column"></ul>
+      </div>
+    </div>
+
+    <div class="hornet-count">
+      Hornet Count: <span id="count">0</span>
+    </div>
+  </div>
+
+  <!-- Info Panel - Bottom Left -->
+  <div class="info-panel">
+    <div class="info-content-wrapper">
+      <div class="singularity-flash" id="singularity-flash"></div>
+
+      <!-- Slide 0: Date/Time + Countdown -->
+      <div class="info-slide active" data-slide="0">
+        <div class="current-time">
+          <div class="date" id="current-date"></div>
+          <div class="time" id="current-time"></div>
+        </div>
+
+        <div class="event-countdown">
+          <div class="event-name" id="event-name">NEXT COMPETITION</div>
+          <div class="countdown-label">Countdown</div>
+          <div class="countdown-timer">
+            <div class="countdown-unit">
+              <div class="countdown-value" id="countdown-days">00</div>
+              <div class="countdown-label-unit">Days</div>
+            </div>
+            <div class="countdown-unit">
+              <div class="countdown-value" id="countdown-hours">00</div>
+              <div class="countdown-label-unit">Hours</div>
+            </div>
+            <div class="countdown-unit">
+              <div class="countdown-value" id="countdown-mins">00</div>
+              <div class="countdown-label-unit">Mins</div>
+            </div>
+            <div class="countdown-unit">
+              <div class="countdown-value" id="countdown-secs">00</div>
+              <div class="countdown-label-unit">Secs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 1: Git Commits -->
+      <div class="info-slide" data-slide="1">
+        <div class="slide-title">RECENT COMMITS</div>
+        <div class="commits-list" id="commits-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Slide 2: Build Season Progress -->
+      <div class="info-slide" data-slide="2">
+        <div class="slide-title">BUILD SEASON</div>
+        <div class="build-progress-container">
+          <div class="progress-stat">
+            <div class="progress-stat-label">Days Remaining</div>
+            <div class="progress-stat-value" id="build-days-left">--</div>
+          </div>
+
+          <div class="progress-bar-container">
+            <div class="progress-bar-label">
+              <span>Progress</span>
+              <span id="build-percent">0%</span>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="build-progress-bar" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="current-milestone">
+            <div class="milestone-label">Current Phase</div>
+            <div class="milestone-name" id="current-milestone">--</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3: Weather -->
+      <div class="info-slide" data-slide="3">
+        <div class="slide-title">WEATHER</div>
+        <div class="weather-container">
+          <div class="weather-location" id="weather-location">Loading...</div>
+          <div class="weather-main">
+            <div class="weather-icon" id="weather-icon">🌡️</div>
+            <div class="weather-temp" id="weather-temp">--°F</div>
+          </div>
+          <div class="weather-desc" id="weather-desc">--</div>
+          <div class="weather-details">
+            <div class="weather-detail">
+              <div class="weather-detail-value" id="weather-humidity">--%</div>
+              <div class="weather-detail-label">Humidity</div>
+            </div>
+            <div class="weather-detail">
+              <div class="weather-detail-value" id="weather-wind">-- mph</div>
+              <div class="weather-detail-label">Wind</div>
+            </div>
+            <div class="weather-detail">
+              <div class="weather-detail-value" id="weather-high">--°</div>
+              <div class="weather-detail-label">High</div>
+            </div>
+            <div class="weather-detail">
+              <div class="weather-detail-value" id="weather-low">--°</div>
+              <div class="weather-detail-label">Low</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 4: Days Since Last Accident -->
+      <div class="info-slide" data-slide="4">
+        <div class="slide-title">SAFETY REPORT</div>
+        <div class="accident-container">
+          <div class="accident-icon">⚠️</div>
+          <div class="accident-days" id="accident-days">0</div>
+          <div class="accident-label">Days Since Last<br>"Learning Experience"</div>
+          <div class="accident-subtitle" id="accident-subtitle">We're doing great... probably</div>
+          <div class="accident-record">
+            <div class="accident-record-label">Personal Best</div>
+            <div class="accident-record-value" id="accident-record">0 days</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Swarm container for transition -->
+      <div class="swarm-container" id="swarm-container"></div>
+
+      <!-- Stripe overlay for transition -->
+      <div class="stripe-overlay" id="stripe-overlay"></div>
+
+      <!-- Static overlay for buzz transition -->
+      <div class="static-overlay" id="static-overlay"></div>
+
+      <!-- Hack overlay for hack transition (replaces stinger) -->
+      <div class="hack-overlay" id="hack-overlay"></div>
+
+    </div>
+  </div>
+
+  <!-- Right Section: Tasks Table -->
+  <div class="right-section">
+    <!-- Tasks Table -->
+    <div class="tasks-table" id="tasks-table">
+      <div class="hex-overlay" id="hex-overlay"></div>
+    </div>
+  </div>
+
+  <script>
+    const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyUqRJZshovjtFliIbTaAhkhLpXNLeFJkivVP9DnTe2MwEE3qHY5376xLGV0qsJe24d4Q/exec";
+    let SHEET_DATA = {};
+
+    async function loadSheetData() {
+      const res = await fetch(SHEET_API_URL);
+      SHEET_DATA = await res.json();
+      applySheetData();
+    }
+
+    loadSheetData();
+    setInterval(loadSheetData, 60000);
+
+    let allNames = [];
+
+    const leftColumn = document.getElementById('left-column');
+    const rightColumn = document.getElementById('right-column');
+    const wrapper = document.getElementById('names-wrapper');
+    const countSpan = document.getElementById('count');
+
+    countSpan.textContent = allNames.length;
+
+    function createListItem(name) {
+      const li = document.createElement('li');
+      li.textContent = name;
+      return li;
+    }
+
+    function setupAttendance(names) { // this took me 2 straight days to fix and it shouldn't take that long
+      leftColumn.innerHTML = '';
+      rightColumn.innerHTML = '';
+      wrapper.classList.remove('scrolling');
+      wrapper.style.removeProperty('animation-duration');
+      wrapper.style.removeProperty('--scroll-distance');
+      
+      countSpan.textContent = names.length;
+
+      if (!names || names.length === 0) {
+        rightColumn.style.display = 'none';
+        return;
+      }
+
+      const mid = Math.ceil(names.length / 2);
+      const leftNames = names.slice(0, mid);
+      const rightNames = names.slice(mid);
+
+      if (leftNames.length > rightNames.length) {
+        rightNames.push('\u00A0');
+      }
+
+      leftNames.forEach(name => leftColumn.appendChild(createListItem(name)));
+      rightNames.forEach(name => rightColumn.appendChild(createListItem(name)));
+
+      if (names.length <= 10) {
+        if (names.length <= 5) rightColumn.style.display = 'none';
+        else rightColumn.style.display = '';
+        return; 
+      }
+
+      rightColumn.style.display = '';
+
+      const duplicates = 3; 
+      for (let i = 0; i < duplicates; i++) {
+        leftNames.forEach(name => leftColumn.appendChild(createListItem(name)));
+        rightNames.forEach(name => rightColumn.appendChild(createListItem(name)));
+      }
+      const rowHeightVh = 6; 
+      const totalRows = leftNames.length;
+      const scrollDistanceVh = totalRows * rowHeightVh;
+
+      wrapper.style.setProperty('--scroll-distance', `-${scrollDistanceVh}vh`);
+
+      const speed = 5; 
+      const duration = scrollDistanceVh / speed;
+      
+      wrapper.style.animationDuration = `${duration}s`;
+      wrapper.classList.add('scrolling');
+    }
+
+    // initialize with current (possibly empty) list
+    setupAttendance(allNames);
+
+    // ============ SUBTEAM TASKS DATA ============
+    let subteamData = [];
+
+    // More subteams
+    subteamData.push(
+      {
+        name: "CAD",
+        red: ["Robot model", "Field elements"],
+        yellow: ["Intake design"],
+        green: ["Drivetrain model"]
+      },
+      {
+        name: "BUSINESS",
+        red: ["Sponsor packets"],
+        yellow: ["Team branding", "Social media"],
+        green: ["Budget spreadsheet"]
+      },
+      {
+        name: "MANUFACTURING",
+        red: ["CNC parts", "3D prints"],
+        yellow: ["Laser cutting"],
+        green: ["Tool organization"]
+      }
+    );
+
+    // Settings
+    let currentSetIndex = 0;
+    const TEAMS_PER_VIEW = 3;
+    const DISPLAY_DURATION = 10000;
+    const tasksTable = document.getElementById('tasks-table');
+    const hexOverlay = document.getElementById('hex-overlay');
+
+    function createTeamRow(team) {
+      const row = document.createElement('div');
+      row.className = 'team-row';
+
+      row.innerHTML =
+        '<div class="team-label"><span>' + team.name + '</span></div>' +
+        '<div class="task-columns">' +
+        '<div class="task-column red-col">' +
+        team.red.map(function (t) { return '<div class="task-item">' + t + '</div>'; }).join('') +
+        '</div>' +
+        '<div class="task-column yellow-col">' +
+        team.yellow.map(function (t) { return '<div class="task-item">' + t + '</div>'; }).join('') +
+        '</div>' +
+        '<div class="task-column green-col">' +
+        team.green.map(function (t) { return '<div class="task-item">' + t + '</div>'; }).join('') +
+        '</div>' +
+        '</div>';
+
+      return row;
+    }
+
+    function getCurrentTeams() {
+      var teams = [];
+      for (var i = 0; i < TEAMS_PER_VIEW; i++) {
+        var index = (currentSetIndex + i) % subteamData.length;
+        teams.push(subteamData[index]);
+      }
+      return teams;
+    }
+
+    function renderTeams(teams) {
+      var oldRows = tasksTable.querySelectorAll('.team-row');
+      oldRows.forEach(function (row) { row.remove(); });
+
+      teams.forEach(function (team) {
+        tasksTable.appendChild(createTeamRow(team));
+      });
+    }
+
+    function createHexagons() {
+      hexOverlay.innerHTML = '';
+      var rect = tasksTable.getBoundingClientRect();
+
+      // Flat-top hexagon dimensions
+      var hexWidth = window.innerWidth * 0.06;
+      var hexHeight = hexWidth * 0.866; // Proper flat-top ratio (√3/2)
+
+      // Spacing for flat-top honeycomb
+      var horizSpacing = hexWidth * 0.75;
+      var vertSpacing = hexHeight;
+
+      var cols = Math.ceil(rect.width / horizSpacing) + 2;
+      var rows = Math.ceil(rect.height / vertSpacing) + 2;
+
+      var fragment = document.createDocumentFragment();
+
+      for (var row = -1; row < rows; row++) {
+        for (var col = -1; col < cols; col++) {
+          var hex = document.createElement('div');
+          hex.className = 'hexagon';
+
+          // Offset every other COLUMN for flat-top honeycomb
+          var offsetY = (col % 2) * (vertSpacing * 0.5);
+          var x = col * horizSpacing;
+          var y = row * vertSpacing + offsetY;
+
+          hex.style.cssText = 'left:' + x + 'px;top:' + y + 'px;width:' + hexWidth + 'px;height:' + hexHeight + 'px';
+          hex.dataset.delay = (Math.random() * 0.3).toFixed(2);
+          fragment.appendChild(hex);
+        }
+      }
+
+      hexOverlay.appendChild(fragment);
+    }
+
+    function animateHexagons(direction) {
+      return new Promise(function (resolve) {
+        var hexagons = hexOverlay.querySelectorAll('.hexagon');
+        var maxDelay = 0;
+
+        hexagons.forEach(function (hex) {
+          var delay = parseFloat(hex.dataset.delay);
+          if (delay > maxDelay) maxDelay = delay;
+
+          setTimeout(function () {
+            hex.classList.add(direction === 'in' ? 'animate-in' : 'animate-out');
+          }, delay * 1000);
+        });
+
+        // Resolve after max delay + animation duration
+        setTimeout(resolve, (maxDelay * 1000) + 650);
+      });
+    }
+
+    async function transitionTeams() {
+      createHexagons();
+
+      // Hexagons appear
+      await animateHexagons('in');
+
+      // Update content while covered
+      currentSetIndex = (currentSetIndex + TEAMS_PER_VIEW) % subteamData.length;
+      renderTeams(getCurrentTeams());
+
+      // Small delay to ensure content is swapped
+      await new Promise(function (resolve) { setTimeout(resolve, 100); });
+
+      // Hexagons disappear
+      await animateHexagons('out');
+
+      // Clear hexagons after animation completes
+      hexOverlay.innerHTML = '';
+    }
+
+    // Initial render
+    renderTeams(getCurrentTeams());
+
+    // Start rotation
+    setInterval(transitionTeams, DISPLAY_DURATION);
+
+    // ============ DATE/TIME & COUNTDOWN ============
+
+    // Set your next competition date here
+    let nextEvent = { name: "", date: new Date() };
+
+    const currentDateEl = document.getElementById('current-date');
+    const currentTimeEl = document.getElementById('current-time');
+    const eventNameEl = document.getElementById('event-name');
+    const countdownDays = document.getElementById('countdown-days');
+    const countdownHours = document.getElementById('countdown-hours');
+    const countdownMins = document.getElementById('countdown-mins');
+    const countdownSecs = document.getElementById('countdown-secs');
+
+    eventNameEl.textContent = nextEvent.name;
+
+    function updateDateTime() {
+      const now = new Date();
+
+      // Format date: "Friday, March 14, 2025"
+      const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      currentDateEl.textContent = now.toLocaleDateString('en-US', dateOptions);
+
+      // Format time: "3:45:30 PM"
+      const timeOptions = { hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true };
+      currentTimeEl.textContent = now.toLocaleTimeString('en-US', timeOptions);
+
+      // Calculate countdown
+      const diff = nextEvent.date - now;
+
+      if (diff > 0) {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+        countdownDays.textContent = days.toString().padStart(2, '0');
+        countdownHours.textContent = hours.toString().padStart(2, '0');
+        countdownMins.textContent = mins.toString().padStart(2, '0');
+        countdownSecs.textContent = secs.toString().padStart(2, '0');
+      } else {
+        // Event has passed
+        countdownDays.textContent = '00';
+        countdownHours.textContent = '00';
+        countdownMins.textContent = '00';
+        countdownSecs.textContent = '00';
+        eventNameEl.textContent = 'EVENT IN PROGRESS!';
+      }
+    }
+
+    // Update every second
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+
+    // ============ INFO PANEL ROTATION ============
+
+    const infoSlides = document.querySelectorAll('.info-slide');
+    const singularityFlash = document.getElementById('singularity-flash');
+    const swarmContainer = document.getElementById('swarm-container');
+    let currentInfoSlide = 0;
+    const INFO_SLIDE_DURATION = 8000; // 8 seconds per slide
+    const TOTAL_INFO_SLIDES = 5; // Now 5 slides: Date, Commits, Build Progress, Weather, Accident
+
+    // ============ BUILD SEASON CONFIG ============
+
+    let BUILD_SEASON = {
+      startDate: new Date(),
+      endDate: new Date(),
+      milestones: []
+    };
+
+
+    function updateBuildProgress() {
+      const now = new Date();
+      const { startDate, endDate, milestones } = BUILD_SEASON;
+
+      if (!milestones || milestones.length === 0) {
+        return;
+      }
+
+      const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+      const daysPassed = Math.ceil((now - startDate) / (1000 * 60 * 60 * 24));
+      const daysLeft = Math.max(0, totalDays - daysPassed);
+      const percent = Math.min(100, Math.max(0, Math.round((daysPassed / totalDays) * 100)));
+
+      // Find current milestone
+      let currentMilestone = milestones[milestones.length - 1].name;
+      for (const milestone of milestones) {
+        if (daysPassed <= milestone.endDay) {
+          currentMilestone = milestone.name;
+          break;
+        }
+      }
+
+      // Update UI
+      document.getElementById('build-days-left').textContent = daysLeft;
+      document.getElementById('build-percent').textContent = `${percent}%`;
+      document.getElementById('build-progress-bar').style.width = `${percent}%`;
+      document.getElementById('current-milestone').textContent = currentMilestone;
+    }
+
+    // Update build progress every minute
+    updateBuildProgress();
+    setInterval(updateBuildProgress, 60000);
+
+    // ============ TRANSITION FUNCTIONS ============
+
+    // Hornet image for swarm
+    const hornetImageSrc = 'hornet.png';
+
+    // Create hornets for swarm
+    function createSwarm(count = 100) {
+      swarmContainer.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+
+      // Get pixel bounds of the swarm container (info panel content area)
+      const rect = swarmContainer.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      // Radius for landing spread (use >100% of width/height to ensure coverage)
+      const spreadX = rect.width * 1.4;
+      const spreadY = rect.height * 1.4;
+
+      // Radius for starting points (outside the box)
+      const startRadius = Math.max(rect.width, rect.height) * 0.9 + 80;
+
+      for (let i = 0; i < count; i++) {
+        const hornet = document.createElement('div');
+        hornet.className = 'hornet';
+        hornet.innerHTML = `<img src="${hornetImageSrc}" alt="Hornet logo">`;
+
+        // Choose a random angle for nicer distribution
+        const angle = Math.random() * Math.PI * 2;
+
+        // Start off-screen around the circle
+        const startX = Math.cos(angle) * startRadius;
+        const startY = Math.sin(angle) * startRadius;
+
+        // End positions spread across the full panel (offset from center in px)
+        const endX = (Math.random() - 0.5) * spreadX;
+        const endY = (Math.random() - 0.5) * spreadY;
+
+        // Exit position: continue outward from the end point in roughly same direction as start->center->end
+        // compute a vector from center to end, then extend it
+        const dirX = endX;
+        const dirY = endY;
+        const exitMultiplier = 1.6;
+        const exitX = dirX * exitMultiplier;
+        const exitY = dirY * exitMultiplier;
+
+        // Place each hornet at center (we'll translate by pixel offsets)
+        hornet.style.left = '50%';
+        hornet.style.top = '50%';
+
+        // Use pixel-based CSS vars so translate(...) is absolute and large radii work
+        hornet.style.setProperty('--start-x', `${startX}px`);
+        hornet.style.setProperty('--start-y', `${startY}px`);
+        hornet.style.setProperty('--end-x', `${endX}px`);
+        hornet.style.setProperty('--end-y', `${endY}px`);
+        hornet.style.setProperty('--exit-x', `${exitX}px`);
+        hornet.style.setProperty('--exit-y', `${exitY}px`);
+        hornet.style.setProperty('--rotation', `${Math.random() * 360}deg`);
+
+        // Slightly larger stagger so swarm flows in
+        hornet.dataset.delay = (Math.random() * 0.6).toFixed(2);
+
+        fragment.appendChild(hornet);
+      }
+
+      swarmContainer.appendChild(fragment);
+    }
+
+    // Animate swarm in or out
+    function animateSwarm(direction) {
+      return new Promise((resolve) => {
+        const hornets = swarmContainer.querySelectorAll('.hornet');
+        let maxDelay = 0;
+
+        hornets.forEach((hornet) => {
+          const delay = parseFloat(hornet.dataset.delay);
+          if (delay > maxDelay) maxDelay = delay;
+
+          setTimeout(() => {
+            hornet.classList.remove('swarm-in', 'swarm-out');
+            hornet.classList.add(direction === 'in' ? 'swarm-in' : 'swarm-out');
+          }, delay * 1000);
+        });
+
+        // Resolve after max delay + animation duration
+        const animDuration = direction === 'in' ? 800 : 600;
+        setTimeout(resolve, (maxDelay * 1000) + animDuration);
+      });
+    }
+
+    // Swarm Attack transition
+    function swarmTransition(currentSlide, nextSlide) {
+      return new Promise(async (resolve) => {
+        // Create hornets
+        createSwarm(100);
+
+        // Hornets swarm in
+        await animateSwarm('in');
+
+        // Quick fade out current content
+        currentSlide.classList.add('swarm-fade-out');
+
+        await new Promise(r => setTimeout(r, 200));
+
+        // Swap content
+        currentSlide.classList.remove('active', 'swarm-fade-out');
+        nextSlide.classList.add('active', 'swarm-fade-in');
+
+        await new Promise(r => setTimeout(r, 100));
+
+        // Hornets disperse
+        await animateSwarm('out');
+
+        // Clean up
+        nextSlide.classList.remove('swarm-fade-in');
+        swarmContainer.innerHTML = '';
+
+        resolve();
+      });
+    }
+
+    // Singularity Collapse transition
+    function singularityTransition(currentSlide, nextSlide) {
+      return new Promise((resolve) => {
+        currentSlide.classList.add('singularity-out');
+
+        setTimeout(() => {
+          singularityFlash.classList.add('active');
+        }, 500);
+
+        setTimeout(() => {
+          currentSlide.classList.remove('active', 'singularity-out');
+          singularityFlash.classList.remove('active');
+
+          nextSlide.classList.add('active', 'singularity-in');
+
+          setTimeout(() => {
+            nextSlide.classList.remove('singularity-in');
+            resolve();
+          }, 600);
+        }, 600);
+      });
+    }
+
+    // Stripe Sweep transition
+    const stripeOverlay = document.getElementById('stripe-overlay');
+
+    function createStripes(count = 15) {
+      stripeOverlay.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+
+      for (let i = 0; i < count; i++) {
+        const stripe = document.createElement('div');
+        stripe.className = 'stripe';
+        const topPercent = (i / (Math.max(1, count - 1))) * 200 - 50;
+        stripe.style.top = `${topPercent}%`;
+        stripe.dataset.delay = (i * 0.03).toFixed(2);
+        fragment.appendChild(stripe);
+      }
+
+      const filler = document.createElement('div');
+      filler.className = 'stripe filler';
+      filler.style.top = '156%';    // push further down
+      filler.style.left = '-135%';  // move slightly right compared to default -150%
+      filler.style.height = '16%';  // slightly taller to avoid small gap
+      filler.dataset.delay = (count * 0.03).toFixed(2);
+      fragment.appendChild(filler);
+
+      stripeOverlay.appendChild(fragment);
+    }
+
+    function animateStripes(direction) {
+      return new Promise((resolve) => {
+        const stripes = stripeOverlay.querySelectorAll('.stripe');
+        let maxDelay = 0;
+
+        stripes.forEach((stripe) => {
+          const delay = parseFloat(stripe.dataset.delay);
+          if (delay > maxDelay) maxDelay = delay;
+
+          setTimeout(() => {
+            stripe.classList.remove('sweep-in', 'sweep-out');
+            stripe.classList.add(direction === 'in' ? 'sweep-in' : 'sweep-out');
+          }, delay * 1000);
+        });
+
+        const animDuration = direction === 'in' ? 600 : 500;
+        setTimeout(resolve, (maxDelay * 1000) + animDuration);
+      });
+    }
+
+    function stripeTransition(currentSlide, nextSlide) {
+      return new Promise(async (resolve) => {
+        createStripes(15);
+
+        // Stripes sweep in
+        await animateStripes('in');
+
+        // Quick fade out current content
+        currentSlide.classList.add('stripe-fade-out');
+
+        await new Promise(r => setTimeout(r, 150));
+
+        // Swap content
+        currentSlide.classList.remove('active', 'stripe-fade-out');
+        nextSlide.classList.add('active', 'stripe-fade-in');
+
+        await new Promise(r => setTimeout(r, 100));
+
+        // Stripes sweep out
+        await animateStripes('out');
+
+        // Clean up
+        nextSlide.classList.remove('stripe-fade-in');
+        stripeOverlay.innerHTML = '';
+
+        resolve();
+      });
+    }
+
+    // Buzz Static transition
+    const staticOverlay = document.getElementById('static-overlay');
+
+    function createStaticLines(count = 40) {
+      staticOverlay.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+
+      for (let i = 0; i < count; i++) {
+        const line = document.createElement('div');
+        line.className = 'static-line';
+        // Distribute lines across the height
+        const topPercent = (i / count) * 100;
+        line.style.top = `${topPercent}%`;
+        // Vary thickness
+        line.style.height = `${1 + Math.random() * 3}px`;
+        // Random opacity
+        line.style.setProperty('--line-opacity', (0.3 + Math.random() * 0.7).toFixed(2));
+        // Random buzz speed
+        line.style.setProperty('--buzz-duration', `${0.05 + Math.random() * 0.1}s`);
+        // Stagger start
+        line.dataset.delay = (Math.random() * 0.2).toFixed(2);
+        fragment.appendChild(line);
+      }
+
+      staticOverlay.appendChild(fragment);
+    }
+
+    function animateStatic(phase) {
+      return new Promise((resolve) => {
+        const lines = staticOverlay.querySelectorAll('.static-line');
+
+        if (phase === 'start') {
+          // Show overlay and start buzzing
+          staticOverlay.classList.add('active');
+          let maxDelay = 0;
+
+          lines.forEach((line) => {
+            const delay = parseFloat(line.dataset.delay);
+            if (delay > maxDelay) maxDelay = delay;
+
+            setTimeout(() => {
+              line.classList.add('buzzing');
+            }, delay * 1000);
+          });
+
+          setTimeout(resolve, (maxDelay * 1000) + 200);
+
+        } else if (phase === 'intensify') {
+          // Make it more intense
+          staticOverlay.classList.add('intensify');
+          setTimeout(resolve, 300);
+
+        } else if (phase === 'peak') {
+          // Maximum intensity
+          staticOverlay.classList.add('peak');
+          setTimeout(resolve, 200);
+
+        } else if (phase === 'clear') {
+          // Fade out
+          staticOverlay.classList.remove('peak', 'intensify');
+
+          lines.forEach((line, i) => {
+            setTimeout(() => {
+              line.classList.remove('buzzing');
+              line.style.opacity = '0';
+            }, i * 10);
+          });
+
+          setTimeout(() => {
+            staticOverlay.classList.remove('active');
+            resolve();
+          }, lines.length * 10 + 100);
+        }
+      });
+    }
+
+    function buzzStaticTransition(currentSlide, nextSlide) {
+      return new Promise(async (resolve) => {
+        createStaticLines(50);
+
+        // Start static buzz
+        await animateStatic('start');
+
+        // Intensify
+        await animateStatic('intensify');
+
+        // Peak intensity
+        await animateStatic('peak');
+
+        // Swap content during peak
+        currentSlide.classList.add('static-fade-out');
+
+        await new Promise(r => setTimeout(r, 100));
+
+        currentSlide.classList.remove('active', 'static-fade-out');
+        nextSlide.classList.add('active', 'static-fade-in');
+
+        await new Promise(r => setTimeout(r, 100));
+
+        // Clear static
+        await animateStatic('clear');
+
+        // Clean up
+        nextSlide.classList.remove('static-fade-in');
+        staticOverlay.innerHTML = '';
+
+        resolve();
+      });
+    }
+
+    // ============ HACK TRANSITION ============
+
+    const hackOverlay = document.getElementById('hack-overlay');
+
+    const hackMessages = [
+      '> Initializing breach...',
+      '> Bypassing firewall...',
+      '> Decrypting data...',
+      '> Injecting payload...',
+      '> Connection established',
+      '> Uploading virus.exe...',
+      '> Root access obtained',
+      '> Extracting secrets...',
+      '> Eating safety glasses...',
+    ];
+
+    const matrixChars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
+
+    function createHackElements() {
+      hackOverlay.innerHTML = '';
+
+      // Create scanlines
+      const scanlines = document.createElement('div');
+      scanlines.className = 'hack-scanlines';
+      scanlines.id = 'hack-scanlines';
+      hackOverlay.appendChild(scanlines);
+
+      // Create matrix rain container
+      const matrixRain = document.createElement('div');
+      matrixRain.className = 'matrix-rain';
+      matrixRain.id = 'matrix-rain';
+      hackOverlay.appendChild(matrixRain);
+
+      // Create terminal
+      const terminal = document.createElement('div');
+      terminal.className = 'hack-terminal';
+      terminal.id = 'hack-terminal';
+      terminal.innerHTML = '<span class="cursor"></span>';
+      hackOverlay.appendChild(terminal);
+    }
+
+    function createMatrixColumns(count = 15) {
+      const matrixRain = document.getElementById('matrix-rain');
+      const containerWidth = hackOverlay.offsetWidth;
+
+      for (let i = 0; i < count; i++) {
+        const column = document.createElement('div');
+        column.className = 'matrix-column';
+
+        // Random position across width
+        const left = (i / count) * 100 + (Math.random() * (100 / count) - (50 / count));
+        column.style.left = `${left}%`;
+
+        // Random string of matrix characters
+        const length = 10 + Math.floor(Math.random() * 20);
+        let chars = '';
+        for (let j = 0; j < length; j++) {
+          chars += matrixChars[Math.floor(Math.random() * matrixChars.length)];
+        }
+        column.textContent = chars;
+
+        // Random timing
+        column.style.setProperty('--fall-duration', `${0.8 + Math.random() * 1.2}s`);
+        column.dataset.delay = (Math.random() * 0.8).toFixed(2);
+
+        matrixRain.appendChild(column);
+      }
+    }
+
+    function createGlitchLines(count = 5) {
+      for (let i = 0; i < count; i++) {
+        const line = document.createElement('div');
+        line.className = 'glitch-line';
+        line.style.top = `${Math.random() * 100}%`;
+        line.dataset.delay = (Math.random() * 0.5).toFixed(2);
+        hackOverlay.appendChild(line);
+      }
+    }
+
+    function typeTerminalText(text, speed = 30) {
+      return new Promise((resolve) => {
+        const terminal = document.getElementById('hack-terminal');
+        terminal.classList.add('active');
+        terminal.innerHTML = '';
+
+        let index = 0;
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor';
+
+        function typeChar() {
+          if (index < text.length) {
+            terminal.textContent = text.substring(0, index + 1);
+            terminal.appendChild(cursor);
+            index++;
+            setTimeout(typeChar, speed + Math.random() * 20);
+          } else {
+            resolve();
+          }
+        }
+
+        typeChar();
+      });
+    }
+
+    function animateHack(phase) {
+      return new Promise((resolve) => {
+        if (phase === 'start') {
+          hackOverlay.classList.add('active');
+          document.getElementById('hack-scanlines').classList.add('active');
+          setTimeout(resolve, 100);
+
+        } else if (phase === 'matrix') {
+          const columns = hackOverlay.querySelectorAll('.matrix-column');
+          let maxDelay = 0;
+
+          columns.forEach((col) => {
+            const delay = parseFloat(col.dataset.delay);
+            if (delay > maxDelay) maxDelay = delay;
+
+            setTimeout(() => {
+              col.classList.add('fall');
+            }, delay * 1000);
+          });
+
+          setTimeout(resolve, (maxDelay * 1000) + 800);
+
+        } else if (phase === 'glitch') {
+          const lines = hackOverlay.querySelectorAll('.glitch-line');
+          let maxDelay = 0;
+
+          lines.forEach((line) => {
+            const delay = parseFloat(line.dataset.delay);
+            if (delay > maxDelay) maxDelay = delay;
+
+            setTimeout(() => {
+              line.classList.add('active');
+            }, delay * 1000);
+          });
+
+          setTimeout(resolve, (maxDelay * 1000) + 200);
+
+        } else if (phase === 'access') {
+          const terminal = document.getElementById('hack-terminal');
+          terminal.style.opacity = '0';
+          setTimeout(() => {
+            terminal.innerHTML = '';
+          }, 80);
+
+          setTimeout(resolve, 120);
+        } else if (phase === 'fadeOut') {
+          hackOverlay.style.transition = 'background 0.18s ease-out';
+          hackOverlay.style.background = 'transparent';
+
+          document.getElementById('hack-scanlines').classList.remove('active');
+
+          setTimeout(resolve, 180);
+        }
+      });
+    }
+
+    function hackTransition(currentSlide, nextSlide) {
+      return new Promise(async (resolve) => {
+        createHackElements();
+        createMatrixColumns(15);
+        createGlitchLines(5);
+
+        // Start hack overlay
+        await animateHack('start');
+
+        // Matrix rain falls
+        await animateHack('matrix');
+
+        // Type terminal message
+        const randomMessage = hackMessages[Math.floor(Math.random() * hackMessages.length)];
+        await typeTerminalText(randomMessage, 25);
+
+        // Glitch lines
+        await animateHack('glitch');
+
+        // Fade out current content
+        currentSlide.classList.add('hack-fade-out');
+
+        await new Promise(r => setTimeout(r, 200));
+
+        // Access granted
+        await animateHack('access');
+
+        // Swap content
+        currentSlide.classList.remove('active', 'hack-fade-out');
+        nextSlide.classList.add('active', 'hack-fade-in');
+
+        // Fade out hack overlay
+        await animateHack('fadeOut');
+
+        await new Promise(r => setTimeout(r, 400));
+
+        // Clean up
+        nextSlide.classList.remove('hack-fade-in');
+        hackOverlay.classList.remove('active');
+        hackOverlay.style.transition = '';
+        hackOverlay.style.background = '';
+        hackOverlay.innerHTML = '';
+
+        resolve();
+      });
+    }
+
+    // ============ DAYS SINCE LAST ACCIDENT CONFIG ============
+
+    const ACCIDENT_CONFIG = {
+      // Set this to the date of the last "incident"
+      lastAccidentDate: new Date("2025-01-15T14:30:00"),
+      // Personal best record (in days)
+      recordDays: 45,
+      // Funny subtitles based on days
+      subtitles: [
+        { maxDays: 0, text: "Reset the counter... again 😅" },
+        { maxDays: 1, text: "We're off to a fresh start!" },
+        { maxDays: 3, text: "Looking good so far..." },
+        { maxDays: 7, text: "A whole week! Impressive!" },
+        { maxDays: 14, text: "Two weeks of safety excellence!" },
+        { maxDays: 30, text: "Is this a new record?!" },
+        { maxDays: 60, text: "Safety legends in the making!" },
+        { maxDays: 90, text: "At this point, we're just showing off" },
+        { maxDays: Infinity, text: "Has anyone checked on the robot lately?" }
+      ]
+    };
+
+    function updateAccidentCounter() {
+      const { lastAccidentDate, recordDays, subtitles } = ACCIDENT_CONFIG;
+      const now = new Date();
+
+      // Calculate days since last accident
+      const diffMs = now - lastAccidentDate;
+      const daysSince = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+
+      // Find appropriate subtitle
+      let subtitle = subtitles[subtitles.length - 1].text;
+      for (const sub of subtitles) {
+        if (daysSince <= sub.maxDays) {
+          subtitle = sub.text;
+          break;
+        }
+      }
+
+      // Check if we beat the record
+      const currentRecord = Math.max(recordDays, daysSince);
+
+      // Update UI
+      document.getElementById('accident-days').textContent = daysSince;
+      document.getElementById('accident-subtitle').textContent = subtitle;
+      document.getElementById('accident-record').textContent = `${currentRecord} days`;
+
+      // Add visual flair if record is broken
+      const daysEl = document.getElementById('accident-days');
+      if (daysSince > recordDays) {
+        daysEl.style.color = '#00FF00';
+        daysEl.style.textShadow = '0 0 2vw #00FF00, 0 0 4vw rgba(0, 255, 0, 0.5)';
+      } else {
+        daysEl.style.color = '#FFB400';
+        daysEl.style.textShadow = '0 0 2vw #FFB400, 0 0 4vw rgba(255, 180, 0, 0.5)';
+      }
+    }
+
+    // Update accident counter
+    updateAccidentCounter();
+    setInterval(updateAccidentCounter, 60000); // Update every minute
+
+    // ============ GITHUB COMMITS CONFIG ============
+
+    // Easy configuration - just change these values!
+    let GITHUB_CONFIG = {
+      owner: '',  // GitHub username or organization
+      repo: '',      // Repository name
+      token: '',                        // Optional: GitHub personal access token for higher rate limits
+      refreshInterval: 1200000,           // How often to fetch new commits (20 minutes)
+      maxCommits: 5                     // How many commits to display
+    };
+
+    // Store commits data
+    let commitsData = [];
+
+    // Format relative time (e.g., "2 hours ago")
+    function formatRelativeTime(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffSecs = Math.floor(diffMs / 1000);
+      const diffMins = Math.floor(diffSecs / 60);
+      const diffHours = Math.floor(diffMins / 60);
+      const diffDays = Math.floor(diffHours / 24);
+      const diffWeeks = Math.floor(diffDays / 7);
+
+      if (diffSecs < 60) return 'Just now';
+      if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+      if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+      if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+      return `${diffWeeks} week${diffWeeks > 1 ? 's' : ''} ago`;
+    }
+
+    // Fetch commits from all branches
+    async function fetchAllBranchCommits() {
+      const { owner, repo, token, maxCommits } = GITHUB_CONFIG;
+      const headers = token ? { Authorization: `token ${token}` } : {};
+
+      try {
+        // Step 1: Get all branches
+        const branchesRes = await fetch(
+          `https://api.github.com/repos/${owner}/${repo}/branches`,
+          { headers }
+        );
+
+        if (!branchesRes.ok) {
+          throw new Error(`Failed to fetch branches: ${branchesRes.status}`);
+        }
+
+        const branches = await branchesRes.json();
+        console.log(`Found ${branches.length} branches`);
+
+        // Step 2: Fetch commits from each branch
+        const allCommits = [];
+
+        for (const branch of branches) {
+          try {
+            const commitsRes = await fetch(
+              `https://api.github.com/repos/${owner}/${repo}/commits?sha=${branch.name}&per_page=10`,
+              { headers }
+            );
+
+            if (commitsRes.ok) {
+              const commits = await commitsRes.json();
+              // Add branch name to each commit
+              commits.forEach(c => c.branch = branch.name);
+              allCommits.push(...commits);
+            }
+          } catch (err) {
+            console.warn(`Failed to fetch commits from branch ${branch.name}:`, err);
+          }
+        }
+
+        // Step 3: Deduplicate by SHA (commits can appear in multiple branches)
+        const uniqueCommits = [...new Map(
+          allCommits.map(c => [c.sha, c])
+        ).values()];
+
+        // Step 4: Sort by date (newest first)
+        uniqueCommits.sort((a, b) =>
+          new Date(b.commit.author.date) - new Date(a.commit.author.date)
+        );
+
+        // Step 5: Take only the most recent commits
+        const recentCommits = uniqueCommits.slice(0, maxCommits);
+
+        // Step 6: Format for display
+        commitsData = recentCommits.map(commit => ({
+          message: commit.commit.message.split('\n')[0], // First line only
+          author: commit.commit.author.name || commit.author?.login || 'Unknown',
+          time: formatRelativeTime(commit.commit.author.date),
+          sha: commit.sha.substring(0, 7),
+          branch: commit.branch
+        }));
+
+        console.log(`Loaded ${commitsData.length} commits`);
+        populateCommits();
+
+      } catch (error) {
+        console.error('Error fetching GitHub commits:', error);
+
+        // Show error state in UI
+        commitsData = [{
+          message: 'Failed to load commits',
+          author: 'Error',
+          time: 'Check console for details',
+          sha: '-------',
+          branch: ''
+        }];
+        populateCommits();
+      }
+    }
+
+    // Populate commits list in the UI
+    function populateCommits() {
+      const commitsList = document.getElementById('commits-list');
+
+      if (commitsData.length === 0) {
+        commitsList.innerHTML = '<div class="commit-item"><div class="commit-message">Loading commits...</div></div>';
+        return;
+      }
+
+      commitsList.innerHTML = commitsData.map(commit => `
+      <div class="commit-item">
+        <div class="commit-message">${escapeHtml(commit.message)}</div>
+        <div class="commit-meta">
+          <span class="commit-author">${escapeHtml(commit.author)}</span> • 
+          <span class="commit-sha">${commit.sha}</span> • 
+          ${commit.time}
+        </div>
+      </div>
+    `).join('');
+    }
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    setInterval(fetchAllBranchCommits, GITHUB_CONFIG.refreshInterval);
+
+    // ============ WEATHER CONFIG ============
+
+    const WEATHER_CONFIG = {
+      // Saline, Michigan coordinates
+      latitude: 42.1667,
+      longitude: -83.7816,
+      locationName: 'Saline, MI',
+      refreshInterval: 600000 // 10 minutes
+    };
+
+    // Weather code to emoji/description mapping
+    const weatherCodes = {
+      0: { icon: '☀️', desc: 'Clear sky' },
+      1: { icon: '🌤️', desc: 'Mainly clear' },
+      2: { icon: '⛅', desc: 'Partly cloudy' },
+      3: { icon: '☁️', desc: 'Overcast' },
+      45: { icon: '🌫️', desc: 'Foggy' },
+      48: { icon: '🌫️', desc: 'Icy fog' },
+      51: { icon: '🌧️', desc: 'Light drizzle' },
+      53: { icon: '🌧️', desc: 'Drizzle' },
+      55: { icon: '🌧️', desc: 'Heavy drizzle' },
+      61: { icon: '🌧️', desc: 'Light rain' },
+      63: { icon: '🌧️', desc: 'Rain' },
+      65: { icon: '🌧️', desc: 'Heavy rain' },
+      66: { icon: '🌨️', desc: 'Freezing rain' },
+      67: { icon: '🌨️', desc: 'Heavy freezing rain' },
+      71: { icon: '❄️', desc: 'Light snow' },
+      73: { icon: '❄️', desc: 'Snow' },
+      75: { icon: '❄️', desc: 'Heavy snow' },
+      77: { icon: '🌨️', desc: 'Snow grains' },
+      80: { icon: '🌦️', desc: 'Light showers' },
+      81: { icon: '🌦️', desc: 'Showers' },
+      82: { icon: '⛈️', desc: 'Heavy showers' },
+      85: { icon: '🌨️', desc: 'Light snow showers' },
+      86: { icon: '🌨️', desc: 'Snow showers' },
+      95: { icon: '⛈️', desc: 'Thunderstorm' },
+      96: { icon: '⛈️', desc: 'Thunderstorm with hail' },
+      99: { icon: '⛈️', desc: 'Severe thunderstorm' }
+    };
+
+    async function fetchWeather() {
+      const { latitude, longitude, locationName } = WEATHER_CONFIG;
+
+      try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FNew_York`;
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Weather API error: ${response.status}`);
+
+        const data = await response.json();
+
+        const current = data.current;
+        const daily = data.daily;
+        const weatherInfo = weatherCodes[current.weather_code] || { icon: '🌡️', desc: 'Unknown' };
+
+        // Update UI
+        document.getElementById('weather-location').textContent = locationName;
+        document.getElementById('weather-icon').textContent = weatherInfo.icon;
+        document.getElementById('weather-temp').textContent = `${Math.round(current.temperature_2m)}°F`;
+        document.getElementById('weather-desc').textContent = weatherInfo.desc;
+        document.getElementById('weather-humidity').textContent = `${current.relative_humidity_2m}%`;
+        document.getElementById('weather-wind').textContent = `${Math.round(current.wind_speed_10m)} mph`;
+        document.getElementById('weather-high').textContent = `${Math.round(daily.temperature_2m_max[0])}°`;
+        document.getElementById('weather-low').textContent = `${Math.round(daily.temperature_2m_min[0])}°`;
+
+        console.log('Weather updated:', weatherInfo.desc, current.temperature_2m + '°F');
+
+      } catch (error) {
+        console.error('Error fetching weather:', error);
+        document.getElementById('weather-location').textContent = 'Weather unavailable';
+        document.getElementById('weather-icon').textContent = '❓';
+        document.getElementById('weather-temp').textContent = '--°F';
+        document.getElementById('weather-desc').textContent = 'Error loading weather';
+      }
+    }
+
+    // Initial fetch
+    fetchWeather();
+
+    // Refresh weather periodically
+    setInterval(fetchWeather, WEATHER_CONFIG.refreshInterval);
+
+    // Get transition for specific slide change
+    function getTransition(fromSlide, toSlide) {
+      // Date (0) -> Commits (1): Singularity
+      if (fromSlide === 0 && toSlide === 1) return singularityTransition;
+      // Commits (1) -> Build Progress (2): Swarm
+      if (fromSlide === 1 && toSlide === 2) return swarmTransition;
+      // Build Progress (2) -> Weather (3): Stripe Sweep
+      if (fromSlide === 2 && toSlide === 3) return stripeTransition;
+      // Weather (3) -> Accident (4): Hack Transition
+      if (fromSlide === 3 && toSlide === 4) return hackTransition;
+      // Accident (4) -> Date (0): Singularity (loop back)
+      if (fromSlide === 4 && toSlide === 0) return singularityTransition;
+      // Default: Singularity
+      return singularityTransition;
+    }
+
+    // Transition to next slide
+    async function transitionInfoSlide() {
+      const currentSlide = infoSlides[currentInfoSlide];
+      const nextSlideIndex = (currentInfoSlide + 1) % TOTAL_INFO_SLIDES;
+      const nextSlide = infoSlides[nextSlideIndex];
+
+      // Get the appropriate transition
+      const transition = getTransition(currentInfoSlide, nextSlideIndex);
+      await transition(currentSlide, nextSlide);
+
+      currentInfoSlide = nextSlideIndex;
+    }
+
+    // Start info panel rotation
+    setInterval(transitionInfoSlide, INFO_SLIDE_DURATION);
+
+    function applySheetData() {
+      if (!SHEET_DATA.github || !SHEET_DATA.github.user || !SHEET_DATA.github.repo) {
+        console.warn("GITHUB CONFIG MISSING OR NOT LOADED YET: ", SHEET_DATA.github);
+        return;
+      }
+
+      GITHUB_CONFIG = {
+        owner: SHEET_DATA.github.user,  // GitHub username or organization
+        repo: SHEET_DATA.github.repo,      // Repository name
+        token: '',                        // Optional: GitHub personal access token for higher rate limits
+        refreshInterval: 1200000,           // How often to fetch new commits (20 minutes)
+        maxCommits: 5                     // How many commits to display
+      };
+
+      // Initial fetch
+      fetchAllBranchCommits();
+
+      // ===== Attendance =====
+      allNames = SHEET_DATA.attendance || [];
+      setupAttendance(allNames);
+
+      // ===== Tasks =====
+      subteamData = Object.entries(SHEET_DATA.tasks).map(
+        ([name, cols]) => ({
+          name,
+          red: cols.red,
+          yellow: cols.yellow,
+          green: cols.green
+        })
+      );
+
+      renderTeams(getCurrentTeams());
+
+      // ===== Countdown =====
+      nextEvent.name = SHEET_DATA.countdown.event_name;
+      nextEvent.date = new Date(SHEET_DATA.countdown.event_datetime);
+      eventNameEl.textContent = nextEvent.name;
+
+      // ===== Build Season =====
+      BUILD_SEASON.startDate = new Date(SHEET_DATA.build.start_date);
+      BUILD_SEASON.endDate = new Date(SHEET_DATA.build.end_date);
+      BUILD_SEASON.milestones = [
+        { name: SHEET_DATA.build.current_phase, endDay: 999 }
+      ];
+
+      updateBuildProgress();
+
+      // ===== Safety =====
+      const last = new Date(SHEET_DATA.safety.last_incident_date);
+      const days = Math.floor((Date.now() - last) / 86400000);
+
+      document.getElementById("accident-days").textContent = days;
+      document.getElementById("accident-record").textContent =
+        SHEET_DATA.safety.personal_best_days + " days";
+      document.getElementById("accident-subtitle").textContent =
+        SHEET_DATA.safety.subtitle;
+    }
+
+  </script>
+
+</body>
+
+</html>
