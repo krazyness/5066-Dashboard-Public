@@ -1489,7 +1489,6 @@
       wrapper.classList.remove('scrolling');
       wrapper.style.removeProperty('animation-duration');
       wrapper.style.removeProperty('--scroll-distance');
-      
       countSpan.textContent = names.length;
 
       if (!names || names.length === 0) {
@@ -1497,10 +1496,20 @@
         return;
       }
 
+      // FIX: Only split into columns if there are more than 5 names
+      if (names.length <= 5) {
+        rightColumn.style.display = 'none';
+        names.forEach(name => leftColumn.appendChild(createListItem(name)));
+        return;
+      }
+
+      // If more than 5, use the two-column layout
+      rightColumn.style.display = '';
       const mid = Math.ceil(names.length / 2);
       const leftNames = names.slice(0, mid);
       const rightNames = names.slice(mid);
 
+      // Add padding to keep columns even
       if (leftNames.length > rightNames.length) {
         rightNames.push('\u00A0');
       }
@@ -1508,30 +1517,22 @@
       leftNames.forEach(name => leftColumn.appendChild(createListItem(name)));
       rightNames.forEach(name => rightColumn.appendChild(createListItem(name)));
 
-      if (names.length <= 10) {
-        if (names.length <= 5) rightColumn.style.display = 'none';
-        else rightColumn.style.display = '';
-        return; 
+      // Handle scrolling for long lists (more than 10 names)
+      if (names.length > 10) {
+        const duplicates = 3;
+        for (let i = 0; i < duplicates; i++) {
+          leftNames.forEach(name => leftColumn.appendChild(createListItem(name)));
+          rightNames.forEach(name => rightColumn.appendChild(createListItem(name)));
+        }
+        const rowHeightVh = 6;
+        const totalRows = leftNames.length;
+        const scrollDistanceVh = totalRows * rowHeightVh;
+        wrapper.style.setProperty('--scroll-distance', `-${scrollDistanceVh}vh`);
+        const speed = 5;
+        const duration = scrollDistanceVh / speed;
+        wrapper.style.animationDuration = `${duration}s`;
+        wrapper.classList.add('scrolling');
       }
-
-      rightColumn.style.display = '';
-
-      const duplicates = 3; 
-      for (let i = 0; i < duplicates; i++) {
-        leftNames.forEach(name => leftColumn.appendChild(createListItem(name)));
-        rightNames.forEach(name => rightColumn.appendChild(createListItem(name)));
-      }
-      const rowHeightVh = 6; 
-      const totalRows = leftNames.length;
-      const scrollDistanceVh = totalRows * rowHeightVh;
-
-      wrapper.style.setProperty('--scroll-distance', `-${scrollDistanceVh}vh`);
-
-      const speed = 5; 
-      const duration = scrollDistanceVh / speed;
-      
-      wrapper.style.animationDuration = `${duration}s`;
-      wrapper.classList.add('scrolling');
     }
 
     // initialize with current (possibly empty) list
@@ -2531,8 +2532,6 @@
       return div.innerHTML;
     }
 
-    setInterval(fetchAllBranchCommits, GITHUB_CONFIG.refreshInterval);
-
     // ============ WEATHER CONFIG ============
 
     const WEATHER_CONFIG = {
@@ -2648,61 +2647,66 @@
     setInterval(transitionInfoSlide, INFO_SLIDE_DURATION);
 
     function applySheetData() {
-      if (!SHEET_DATA.github || !SHEET_DATA.github.user || !SHEET_DATA.github.repo) {
-        console.warn("GITHUB CONFIG MISSING OR NOT LOADED YET: ", SHEET_DATA.github);
-        return;
-      }
-
-      GITHUB_CONFIG = {
-        owner: SHEET_DATA.github.user,  // GitHub username or organization
-        repo: SHEET_DATA.github.repo,      // Repository name
-        token: '',                        // Optional: GitHub personal access token for higher rate limits
-        refreshInterval: 1200000,           // How often to fetch new commits (20 minutes)
-        maxCommits: 5                     // How many commits to display
-      };
-
-      // Initial fetch
-      fetchAllBranchCommits();
-
-      // ===== Attendance =====
+      // 1. Attendance
       allNames = SHEET_DATA.attendance || [];
       setupAttendance(allNames);
 
-      // ===== Tasks =====
-      subteamData = Object.entries(SHEET_DATA.tasks).map(
-        ([name, cols]) => ({
-          name,
-          red: cols.red,
-          yellow: cols.yellow,
-          green: cols.green
-        })
-      );
+      // 2. Tasks
+      if (SHEET_DATA.tasks) {
+        subteamData = Object.entries(SHEET_DATA.tasks).map(
+          ([name, cols]) => ({
+            name,
+            red: cols.red || [],
+            yellow: cols.yellow || [],
+            green: cols.green || []
+          })
+        );
+        // Refresh the tasks display immediately
+        renderTeams(getCurrentTeams());
+      }
 
-      renderTeams(getCurrentTeams());
+      // 3. Countdown
+      if (SHEET_DATA.countdown) {
+        nextEvent.name = SHEET_DATA.countdown.event_name;
+        nextEvent.date = new Date(SHEET_DATA.countdown.event_datetime);
+        eventNameEl.textContent = nextEvent.name;
+      }
 
-      // ===== Countdown =====
-      nextEvent.name = SHEET_DATA.countdown.event_name;
-      nextEvent.date = new Date(SHEET_DATA.countdown.event_datetime);
-      eventNameEl.textContent = nextEvent.name;
+      // 4. Build Season
+      if (SHEET_DATA.build) {
+        BUILD_SEASON.startDate = new Date(SHEET_DATA.build.start_date);
+        BUILD_SEASON.endDate = new Date(SHEET_DATA.build.end_date);
+        BUILD_SEASON.milestones = [
+          { name: SHEET_DATA.build.current_phase, endDay: 999 }
+        ];
+        updateBuildProgress();
+      }
 
-      // ===== Build Season =====
-      BUILD_SEASON.startDate = new Date(SHEET_DATA.build.start_date);
-      BUILD_SEASON.endDate = new Date(SHEET_DATA.build.end_date);
-      BUILD_SEASON.milestones = [
-        { name: SHEET_DATA.build.current_phase, endDay: 999 }
-      ];
+      // 5. Safety
+      if (SHEET_DATA.safety) {
+        const last = new Date(SHEET_DATA.safety.last_incident_date);
+        const days = Math.floor((Date.now() - last) / 86400000);
 
-      updateBuildProgress();
+        document.getElementById("accident-days").textContent = days;
+        document.getElementById("accident-record").textContent =
+          (SHEET_DATA.safety.personal_best_days || 0) + " days";
+        document.getElementById("accident-subtitle").textContent =
+          SHEET_DATA.safety.subtitle;
+      }
 
-      // ===== Safety =====
-      const last = new Date(SHEET_DATA.safety.last_incident_date);
-      const days = Math.floor((Date.now() - last) / 86400000);
-
-      document.getElementById("accident-days").textContent = days;
-      document.getElementById("accident-record").textContent =
-        SHEET_DATA.safety.personal_best_days + " days";
-      document.getElementById("accident-subtitle").textContent =
-        SHEET_DATA.safety.subtitle;
+      // 6. GITHUB COMMITS (Connected via Apps Script)
+      // We use the data fetched by the server so the token stays hidden
+      if (SHEET_DATA.githubCommits && Array.isArray(SHEET_DATA.githubCommits)) {
+        commitsData = SHEET_DATA.githubCommits.map(commit => ({
+          message: commit.commit.message.split('\n')[0], // First line only
+          author: commit.commit.author.name || commit.author?.login || 'Unknown',
+          time: formatRelativeTime(commit.commit.author.date),
+          sha: commit.sha.substring(0, 7),
+          branch: 'Default' // Your current Apps Script fetches the default branch
+        }));
+        
+        populateCommits();
+      }
     }
 
   </script>
