@@ -9,7 +9,7 @@ Type=Application
 
 Name=Kiosk Browser
 
-Exec=chromium-browser --noerrdialogs --disable-infobars --kiosk --incognito file:///full/path/to/your/file.html
+Exec=chromium --noerrdialogs --disable-infobars --kiosk --incognito file:///home/hornet/frc_dashboard/index.html
 
 Hidden=false
 
