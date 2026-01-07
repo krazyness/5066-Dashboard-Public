@@ -19,6 +19,7 @@
       height: 100vh;
       overflow: hidden;
       font-family: 'Arial', sans-serif;
+      font-size: 1.8vmin; /* Base font size scales with viewport */
     }
 
     /* Attendance Panel */
@@ -27,13 +28,13 @@
       top: 2vh;
       left: 5vw;
       width: 22vw;
-      min-width: 200px;
+      min-width: 0;
       height: 45vh;
       background: rgba(20, 23, 62, 0.9);
-      border-radius: 1vw;
-      padding: 1.5vw;
-      box-shadow: 0 0 1.5vw rgba(255, 180, 0, 0.4);
-      border: 0.15vw solid rgba(255, 180, 0, 0.6);
+      border-radius: 1vmin;
+      padding: 1.5vmin;
+      box-shadow: 0 0 1.5vmin rgba(255, 180, 0, 0.4);
+      border: 0.2vmin solid rgba(255, 180, 0, 0.6);
       backdrop-filter: blur(8px);
       display: flex;
       flex-direction: column;
@@ -43,10 +44,10 @@
 
     .title {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.2em, 2vw, 2.5em);
+      font-size: 3vmin;
       font-weight: 900;
-      letter-spacing: 0.3vw;
-      text-shadow: 0 0 1vw #FFB400;
+      letter-spacing: 0.3vmin;
+      text-shadow: 0 0 1vmin #FFB400;
       color: #FFFFFF;
       text-align: center;
       margin: 0 0 1vh 0;
@@ -77,7 +78,7 @@
       list-style: none;
       padding: 0 1vw;
       margin: 0;
-      font-size: clamp(0.9em, 1.2vw, 1.6em);
+      font-size: 2vmin;
       color: #FFFFFF;
     }
 
@@ -90,10 +91,10 @@
 
     .hornet-count {
       text-align: center;
-      font-size: clamp(1em, 1.8vw, 2.2em);
+      font-size: 2.5vmin;
       font-weight: bold;
       color: #FFFFFF;
-      text-shadow: 0 0 0.8vw #FFB400;
+      text-shadow: 0 0 0.8vmin #FFB400;
       margin-top: 1vh;
     }
 
@@ -133,21 +134,21 @@
       display: flex;
       gap: 0.5vw;
       background: rgba(20, 23, 62, 0.8);
-      border-radius: 0.8vw;
-      border: 0.15vw solid rgba(255, 180, 0, 0.4);
-      box-shadow: 0 0 1vw rgba(255, 180, 0, 0.2);
+      border-radius: 0.8vmin;
+      border: 0.2vmin solid rgba(255, 180, 0, 0.4);
+      box-shadow: 0 0 1vmin rgba(255, 180, 0, 0.2);
       backdrop-filter: blur(8px);
       overflow: hidden;
     }
 
     .team-label {
       width: 3vw;
-      min-width: 30px;
+      min-width: 0;
       background: rgba(255, 180, 0, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      border-right: 0.15vw solid rgba(255, 180, 0, 0.3);
+      border-right: 0.2vmin solid rgba(255, 180, 0, 0.3);
     }
 
     .team-label span {
@@ -155,23 +156,23 @@
       text-orientation: mixed;
       transform: rotate(180deg);
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(0.7em, 1.1vw, 1.3em);
+      font-size: 1.8vmin;
       font-weight: 700;
       color: #FFFFFF;
-      text-shadow: 0 0 0.6vw #FFB400;
-      letter-spacing: 0.1vw;
+      text-shadow: 0 0 0.6vmin #FFB400;
+      letter-spacing: 0.1vmin;
     }
 
     .task-columns {
       flex: 1;
       display: flex;
       gap: 0.5vw;
-      padding: 0.5vw;
+      padding: 0.5vmin;
     }
 
     .task-column {
       flex: 1;
-      border-radius: 0.5vw;
+      border-radius: 0.5vmin;
       padding: 1vh 0.5vw;
       display: flex;
       flex-direction: column;
@@ -181,24 +182,24 @@
 
     .task-column.red-col {
       background: rgba(255, 0, 0, 0.15);
-      border: 0.1vw solid rgba(255, 0, 0, 0.4);
+      border: 0.15vmin solid rgba(255, 0, 0, 0.4);
     }
 
     .task-column.yellow-col {
       background: rgba(255, 255, 0, 0.1);
-      border: 0.1vw solid rgba(255, 255, 0, 0.4);
+      border: 0.15vmin solid rgba(255, 255, 0, 0.4);
     }
 
     .task-column.green-col {
       background: rgba(0, 255, 0, 0.1);
-      border: 0.1vw solid rgba(0, 255, 0, 0.4);
+      border: 0.15vmin solid rgba(0, 255, 0, 0.4);
     }
 
     .task-item {
       background: rgba(255, 255, 255, 0.1);
-      border-radius: 0.4vw;
+      border-radius: 0.4vmin;
       padding: 0.5vh 0.5vw;
-      font-size: clamp(0.6em, 0.9vw, 1em);
+      font-size: 1.5vmin;
       text-align: center;
       color: #FFFFFF;
     }
@@ -271,15 +272,14 @@
       position: absolute;
       top: 49vh;
       left: 5vw;
-      /* Changed from 1vw */
       width: 22vw;
-      min-width: 200px;
+      min-width: 0;
       height: 47vh;
       background: rgba(20, 23, 62, 0.9);
-      border-radius: 1vw;
-      padding: 1.5vw;
-      box-shadow: 0 0 1.5vw rgba(255, 180, 0, 0.4);
-      border: 0.15vw solid rgba(255, 180, 0, 0.6);
+      border-radius: 1vmin;
+      padding: 1.5vmin;
+      box-shadow: 0 0 1.5vmin rgba(255, 180, 0, 0.4);
+      border: 0.2vmin solid rgba(255, 180, 0, 0.6);
       backdrop-filter: blur(8px);
       display: flex;
       flex-direction: column;
@@ -294,17 +294,17 @@
 
     .current-time .date {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1em, 1.5vw, 1.8em);
+      font-size: 2vmin;
       color: #FFFFFF;
-      text-shadow: 0 0 0.5vw #FFB400;
+      text-shadow: 0 0 0.5vmin #FFB400;
     }
 
     .current-time .time {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.5em, 2.5vw, 3em);
+      font-size: 4vmin;
       font-weight: 900;
       color: #FFB400;
-      text-shadow: 0 0 1vw #FFB400;
+      text-shadow: 0 0 1vmin #FFB400;
     }
 
     .event-countdown {
@@ -313,22 +313,22 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      border-top: 0.1vw solid rgba(255, 180, 0, 0.3);
+      border-top: 0.15vmin solid rgba(255, 180, 0, 0.3);
       padding-top: 2vh;
     }
 
     .event-name {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(0.8em, 1.2vw, 1.4em);
+      font-size: 2vmin;
       font-weight: 700;
       color: #FFB400;
       text-align: center;
       margin-bottom: 1vh;
-      text-shadow: 0 0 0.5vw #FFB400;
+      text-shadow: 0 0 0.5vmin #FFB400;
     }
 
     .countdown-label {
-      font-size: clamp(0.7em, 1vw, 1.2em);
+      font-size: 1.6vmin;
       color: rgba(255, 255, 255, 0.7);
       margin-bottom: 1vh;
     }
@@ -350,12 +350,12 @@
 
     .countdown-value {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.2em, 2vw, 2.5em);
+      font-size: 3vmin;
       font-weight: 900;
       color: #FFFFFF;
-      text-shadow: 0 0 0.8vw #FFB400;
+      text-shadow: 0 0 0.8vmin #FFB400;
       background: rgba(255, 180, 0, 0.1);
-      border-radius: 0.5vw;
+      border-radius: 0.5vmin;
       padding: 0.3vh 0.5vw;
       min-width: 2vw;
       text-align: center;
@@ -363,7 +363,7 @@
     }
 
     .countdown-label-unit {
-      font-size: clamp(0.6em, 0.8vw, 1em);
+      font-size: 1.2vmin;
       color: rgba(255, 255, 255, 0.6);
       margin-top: 0.5vh;
       text-transform: uppercase;
@@ -387,11 +387,11 @@
       text-orientation: mixed;
       transform: rotate(180deg);
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.2em, 2vw, 2.5em);
+      font-size: 3vmin;
       font-weight: 900;
-      letter-spacing: 0.5vw;
+      letter-spacing: 0.5vmin;
       color: #FFB400;
-      text-shadow: 0 0 1.5vw #FFB400, 0 0 3vw rgba(255, 180, 0, 0.5);
+      text-shadow: 0 0 1.5vmin #FFB400, 0 0 3vmin rgba(255, 180, 0, 0.5);
     }
 
     /* Info Panel Slides */
@@ -420,12 +420,12 @@
 
     .slide-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1em, 1.5vw, 1.8em);
+      font-size: 2.5vmin;
       font-weight: 700;
       color: #FFB400;
       text-align: center;
       margin-bottom: 2vh;
-      text-shadow: 0 0 0.8vw #FFB400;
+      text-shadow: 0 0 0.8vmin #FFB400;
     }
 
     /* Singularity Collapse Transition */
@@ -540,13 +540,13 @@
 
     .commit-item {
       background: rgba(255, 180, 0, 0.1);
-      border-radius: 0.5vw;
+      border-radius: 0.5vmin;
       padding: 1vh 1vw;
-      border-left: 0.3vw solid #FFB400;
+      border-left: 0.4vmin solid #FFB400;
     }
 
     .commit-message {
-      font-size: clamp(0.7em, 1vw, 1.1em);
+      font-size: 1.6vmin;
       color: #FFFFFF;
       margin-bottom: 0.5vh;
       white-space: nowrap;
@@ -555,7 +555,7 @@
     }
 
     .commit-meta {
-      font-size: clamp(0.6em, 0.8vw, 0.9em);
+      font-size: 1.3vmin;
       color: rgba(255, 255, 255, 0.6);
     }
 
@@ -584,17 +584,17 @@
     }
 
     .progress-stat-label {
-      font-size: clamp(0.7em, 1vw, 1.1em);
+      font-size: 1.6vmin;
       color: rgba(255, 255, 255, 0.7);
       margin-bottom: 0.5vh;
     }
 
     .progress-stat-value {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.5em, 2.5vw, 3em);
+      font-size: 4vmin;
       font-weight: 900;
       color: #FFB400;
-      text-shadow: 0 0 1vw #FFB400;
+      text-shadow: 0 0 1vmin #FFB400;
     }
 
     .progress-bar-container {
@@ -604,7 +604,7 @@
     .progress-bar-label {
       display: flex;
       justify-content: space-between;
-      font-size: clamp(0.6em, 0.9vw, 1em);
+      font-size: 1.4vmin;
       color: rgba(255, 255, 255, 0.7);
       margin-bottom: 0.5vh;
     }
@@ -614,7 +614,7 @@
       background: rgba(255, 255, 255, 0.1);
       border-radius: 1vh;
       overflow: hidden;
-      border: 0.1vw solid rgba(255, 180, 0, 0.3);
+      border: 0.15vmin solid rgba(255, 180, 0, 0.3);
     }
 
     .progress-bar-fill {
@@ -622,7 +622,7 @@
       background: linear-gradient(90deg, #FFB400, #FF8C00);
       border-radius: 1vh;
       transition: width 1s ease;
-      box-shadow: 0 0 1vw #FFB400;
+      box-shadow: 0 0 1vmin #FFB400;
     }
 
     .current-milestone {
@@ -630,19 +630,19 @@
       text-align: center;
       padding: 1vh;
       background: rgba(255, 180, 0, 0.1);
-      border-radius: 0.5vw;
-      border-left: 0.3vw solid #FFB400;
+      border-radius: 0.5vmin;
+      border-left: 0.4vmin solid #FFB400;
     }
 
     .milestone-label {
-      font-size: clamp(0.6em, 0.8vw, 0.9em);
+      font-size: 1.3vmin;
       color: rgba(255, 255, 255, 0.6);
       margin-bottom: 0.3vh;
     }
 
     .milestone-name {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(0.8em, 1.2vw, 1.4em);
+      font-size: 2vmin;
       font-weight: 700;
       color: #FFFFFF;
     }
@@ -661,8 +661,8 @@
 
     .hornet {
       position: absolute;
-      width: 10vw;
-      height: 10vw;
+      width: 16vmin;
+      height: 16vmin;
       opacity: 0;
       will-change: transform, opacity;
     }
@@ -671,8 +671,8 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
-      filter: drop-shadow(0 0 0.4vw #FFB400);
-      -webkit-filter: drop-shadow(0 0 0.4vw #FFB400);
+      filter: drop-shadow(0 0 0.6vmin #FFB400);
+      -webkit-filter: drop-shadow(0 0 0.6vmin #FFB400);
       display: block;
       pointer-events: none;
     }
@@ -769,10 +769,8 @@
     .stripe {
       position: absolute;
       left: -150%;
-      /* ensure stripe starts well left so rotation covers panel */
       width: 300%;
       height: 14%;
-      /* slightly taller so gaps don't appear after rotation */
       transform-origin: center;
       transform: rotate(-45deg) translateX(-150%);
       opacity: 0;
@@ -861,7 +859,7 @@
 
     .weather-location {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(0.8em, 1.2vw, 1.4em);
+      font-size: 2vmin;
       color: rgba(255, 255, 255, 0.7);
     }
 
@@ -872,19 +870,19 @@
     }
 
     .weather-icon {
-      font-size: clamp(3em, 5vw, 6em);
+      font-size: 8vmin;
     }
 
     .weather-temp {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(2.5em, 4vw, 5em);
+      font-size: 6vmin;
       font-weight: 900;
       color: #FFB400;
-      text-shadow: 0 0 1vw #FFB400;
+      text-shadow: 0 0 1vmin #FFB400;
     }
 
     .weather-desc {
-      font-size: clamp(0.9em, 1.3vw, 1.5em);
+      font-size: 2.2vmin;
       color: #FFFFFF;
       text-transform: capitalize;
     }
@@ -903,13 +901,13 @@
     }
 
     .weather-detail-label {
-      font-size: clamp(0.6em, 0.8vw, 0.9em);
+      font-size: 1.3vmin;
       color: rgba(255, 255, 255, 0.6);
     }
 
     .weather-detail-value {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1em, 1.4vw, 1.6em);
+      font-size: 2.2vmin;
       font-weight: 700;
       color: #FFFFFF;
     }
@@ -935,7 +933,7 @@
       position: absolute;
       left: 0;
       width: 100%;
-      height: 2px;
+      height: 0.3vmin;
       background: #FFB400;
       opacity: 0;
       will-change: transform, opacity;
@@ -978,7 +976,7 @@
 
     .static-overlay.peak .static-line {
       animation-duration: 0.03s !important;
-      box-shadow: 0 0 8px #FFB400, 0 0 15px #FFB400;
+      box-shadow: 0 0 1vmin #FFB400, 0 0 2vmin #FFB400;
     }
 
     .info-slide.static-fade-out {
@@ -1022,7 +1020,7 @@
     }
 
     .accident-icon {
-      font-size: clamp(2em, 3.5vw, 4em);
+      font-size: 6vmin;
       animation: wobble 2s ease-in-out infinite;
     }
 
@@ -1040,25 +1038,25 @@
 
     .accident-days {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(3em, 5vw, 6em);
+      font-size: 10vmin;
       font-weight: 900;
       color: #FFB400;
-      text-shadow: 0 0 2vw #FFB400, 0 0 4vw rgba(255, 180, 0, 0.5);
+      text-shadow: 0 0 2vmin #FFB400, 0 0 4vmin rgba(255, 180, 0, 0.5);
       line-height: 1;
     }
 
     .accident-label {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(0.6em, 1vw, 1.2em);
+      font-size: 1.8vmin;
       font-weight: 700;
       color: #FFFFFF;
       text-align: center;
       text-transform: uppercase;
-      letter-spacing: 0.15vw;
+      letter-spacing: 0.15vmin;
     }
 
     .accident-subtitle {
-      font-size: clamp(0.5em, 0.8vw, 0.9em);
+      font-size: 1.4vmin;
       color: rgba(255, 255, 255, 0.6);
       text-align: center;
       font-style: italic;
@@ -1068,20 +1066,20 @@
       margin-top: 1vh;
       padding: 0.8vh 1.2vw;
       background: rgba(255, 180, 0, 0.1);
-      border-radius: 0.5vw;
-      border: 0.1vw solid rgba(255, 180, 0, 0.3);
+      border-radius: 0.5vmin;
+      border: 0.15vmin solid rgba(255, 180, 0, 0.3);
       text-align: center;
     }
 
     .accident-record-label {
-      font-size: clamp(0.5em, 0.7vw, 0.8em);
+      font-size: 1.2vmin;
       color: rgba(255, 255, 255, 0.5);
       margin-bottom: 0.2vh;
     }
 
     .accident-record-value {
       font-family: 'Orbitron', sans-serif;
-      font-size: clamp(0.8em, 1.2vw, 1.4em);
+      font-size: 2vmin;
       font-weight: 700;
       color: #FFB400;
     }
@@ -1116,9 +1114,9 @@
       position: absolute;
       top: -100%;
       font-family: 'Courier New', monospace;
-      font-size: clamp(0.6em, 1vw, 1.2em);
+      font-size: 1.8vmin;
       color: #00FF00;
-      text-shadow: 0 0 8px #00FF00, 0 0 15px #00FF00;
+      text-shadow: 0 0 1vmin #00FF00, 0 0 2vmin #00FF00;
       writing-mode: vertical-rl;
       text-orientation: mixed;
       white-space: nowrap;
@@ -1152,9 +1150,9 @@
       left: 50%;
       transform: translate(-50%, -50%);
       font-family: 'Courier New', monospace;
-      font-size: clamp(0.7em, 1.1vw, 1.3em);
+      font-size: 2vmin;
       color: #00FF00;
-      text-shadow: 0 0 10px #00FF00;
+      text-shadow: 0 0 1vmin #00FF00;
       text-align: left;
       opacity: 0;
       white-space: pre;
@@ -1177,12 +1175,12 @@
 
     .hack-terminal .cursor {
       display: inline-block;
-      width: 0.6em;
-      height: 1.1em;
+      width: 1.2vmin;
+      height: 2.2vmin;
       background: #00FF00;
       animation: cursorBlink 0.5s step-end infinite;
       vertical-align: middle;
-      margin-left: 2px;
+      margin-left: 0.3vmin;
     }
 
     @keyframes cursorBlink {
@@ -1202,7 +1200,7 @@
       position: absolute;
       left: 0;
       width: 100%;
-      height: 2px;
+      height: 0.3vmin;
       background: #00FF00;
       opacity: 0;
       will-change: transform, opacity;
@@ -1236,9 +1234,9 @@
       height: 100%;
       background: repeating-linear-gradient(0deg,
           transparent,
-          transparent 2px,
-          rgba(0, 255, 0, 0.03) 2px,
-          rgba(0, 255, 0, 0.03) 4px);
+          transparent 0.3vmin,
+          rgba(0, 255, 0, 0.03) 0.3vmin,
+          rgba(0, 255, 0, 0.03) 0.6vmin);
       pointer-events: none;
       opacity: 0;
     }
