@@ -156,7 +156,7 @@
       text-orientation: mixed;
       transform: rotate(180deg);
       font-family: 'Orbitron', sans-serif;
-      font-size: 1.8vmin;
+      font-size: 2vmin; /* Increased from 1.8vmin */
       font-weight: 700;
       color: #FFFFFF;
       text-shadow: 0 0 0.6vmin #FFB400;
@@ -199,7 +199,7 @@
       background: rgba(255, 255, 255, 0.1);
       border-radius: 0.4vmin;
       padding: 0.5vh 0.5vw;
-      font-size: 1.5vmin;
+      font-size: 2vmin;
       text-align: center;
       color: #FFFFFF;
     }
@@ -350,7 +350,7 @@
 
     .countdown-value {
       font-family: 'Orbitron', sans-serif;
-      font-size: 3vmin;
+      font-size: 3.5vmin;
       font-weight: 900;
       color: #FFFFFF;
       text-shadow: 0 0 0.8vmin #FFB400;
@@ -363,13 +363,12 @@
     }
 
     .countdown-label-unit {
-      font-size: 1.2vmin;
+      font-size: 1.5vmin;
       color: rgba(255, 255, 255, 0.6);
       margin-top: 0.5vh;
       text-transform: uppercase;
     }
 
-    /* Add this new style for the vertical title */
     .vertical-title {
       position: absolute;
       top: 2vh;
@@ -387,7 +386,7 @@
       text-orientation: mixed;
       transform: rotate(180deg);
       font-family: 'Orbitron', sans-serif;
-      font-size: 3vmin;
+      font-size: 5vmin; /* Increased from 3vmin */
       font-weight: 900;
       letter-spacing: 0.5vmin;
       color: #FFB400;
@@ -2301,7 +2300,10 @@
         // Glitch lines
         await animateHack('glitch');
 
+
+
         // Fade out current content
+       
         currentSlide.classList.add('hack-fade-out');
 
         await new Promise(r => setTimeout(r, 200));
