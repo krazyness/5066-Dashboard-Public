@@ -35,7 +35,7 @@
       padding: 1.5vmin;
       box-shadow: 0 0 1.5vmin rgba(255, 180, 0, 0.4);
       border: 0.2vmin solid rgba(255, 180, 0, 0.6);
-      backdrop-filter: blur(8px);
+      backdrop-filter: none;
       display: flex;
       flex-direction: column;
       z-index: 10;
@@ -47,10 +47,10 @@
       font-size: 3vmin;
       font-weight: 900;
       letter-spacing: 0.3vmin;
-      text-shadow: 0 0 1vmin #FFB400;
       color: #FFFFFF;
       text-align: center;
       margin: 0 0 1vh 0;
+      text-shadow: 0 0 0.5vmin #FFB400;
     }
 
     .names-container {
@@ -137,7 +137,7 @@
       border-radius: 0.8vmin;
       border: 0.2vmin solid rgba(255, 180, 0, 0.4);
       box-shadow: 0 0 1vmin rgba(255, 180, 0, 0.2);
-      backdrop-filter: blur(8px);
+      backdrop-filter: none;
       overflow: hidden;
     }
 
@@ -214,6 +214,7 @@
       pointer-events: none;
       z-index: 100;
       overflow: hidden;
+      contain: strict;
     }
 
     .hexagon {
@@ -280,7 +281,7 @@
       padding: 1.5vmin;
       box-shadow: 0 0 1.5vmin rgba(255, 180, 0, 0.4);
       border: 0.2vmin solid rgba(255, 180, 0, 0.6);
-      backdrop-filter: blur(8px);
+      backdrop-filter: none;
       display: flex;
       flex-direction: column;
       z-index: 10;
@@ -390,7 +391,7 @@
       font-weight: 900;
       letter-spacing: 0.5vmin;
       color: #FFB400;
-      text-shadow: 0 0 1.5vmin #FFB400, 0 0 3vmin rgba(255, 180, 0, 0.5);
+      text-shadow: 0 0 0.5vmin #FFB400;
     }
 
     /* Info Panel Slides */
@@ -656,6 +657,7 @@
       pointer-events: none;
       z-index: 60;
       overflow: hidden;
+      contain: strict;
     }
 
     .hornet {
@@ -1287,6 +1289,21 @@
         filter: none;
       }
     }
+
+    /* 1. Remove or reduce backdrop-filter */
+.attendance-panel, .team-row, .info-panel {
+    backdrop-filter: none; /* or blur(2px) max */
+}
+
+/* 2. Add containment for animated containers */
+.hex-overlay, .swarm-container, .static-overlay {
+    contain: strict;
+}
+
+/* 3. Reduce text-shadow complexity */
+.title, .vertical-title span {
+    text-shadow: 0 0 0.5vmin #FFB400; /* Single layer instead of multiple */
+}
   </style>
 </head>
 
@@ -2285,7 +2302,7 @@
       return new Promise(async (resolve) => {
         createHackElements();
         createMatrixColumns(15);
-        createGlitchLines(5);
+               createGlitchLines(5);
 
         // Start hack overlay
         await animateHack('start');
@@ -2303,7 +2320,6 @@
 
 
         // Fade out current content
-       
         currentSlide.classList.add('hack-fade-out');
 
         await new Promise(r => setTimeout(r, 200));
